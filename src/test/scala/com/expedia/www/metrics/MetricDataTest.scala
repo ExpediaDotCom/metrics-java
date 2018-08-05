@@ -28,5 +28,16 @@ class MetricDataTest extends FunSpec with Matchers with GivenWhenThen  {
       Then("the id should be predictable")
       metric.id should be("1.35fe936049e9cf9fc0453685dc3ba566")
     }
+
+    it("should have the same id with different tag orders") {
+      Given("Two MetricDatas with tags in different orders")
+      val tags1 = List("tag1=value1", "tag2=value2")
+      val metric1 = new MetricData(1, "dummy", 60, Math.random, "P", System.currentTimeMillis / 1000L, "gauge", tags1.asJava)
+      val tags2 = List("tag2=value2", "tag1=value1")
+      val metric2 = new MetricData(1, "dummy", 60, Math.random, "P", System.currentTimeMillis / 1000L, "gauge", tags2.asJava)
+
+      Then("the ids should match")
+      metric1.id should be(metric2.id)
+    }
   }
 }

@@ -44,7 +44,9 @@ public class MetricData {
         this.unit = unit;
         this.time = time;
         this.mtype = mtype;
-        this.tags = Collections.unmodifiableList(new ArrayList<>(tags));
+        ArrayList<String> list = new ArrayList<>(tags);
+        Collections.sort(list);
+        this.tags = Collections.unmodifiableList(list);
 
         MessageDigest md;
         try {
@@ -59,7 +61,7 @@ public class MetricData {
         md.update(mtype.getBytes(StandardCharsets.UTF_8));
         md.update((byte)0);
         md.update(interval.toString().getBytes(StandardCharsets.UTF_8));
-        for (final String tag : tags) {
+        for (final String tag : this.tags) {
             md.update((byte)0);
             md.update(tag.getBytes(StandardCharsets.UTF_8));
         }
