@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.expedia.metrics
+package com.expedia.metrics.metrictank
 
-import java.util.{Base64, Collections}
+import java.util.Base64
 
+import com.expedia.metrics.{MetricData, MetricDefinition}
 import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 
 import scala.collection.JavaConverters._
@@ -30,7 +31,15 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
 
     it("should serialize a MetricData") {
       Given("A MetricData")
-      val metric = new MetricData(1, "a", 60, 0.5202212202357678, "P", 1533174724L, "gauge", Collections.emptyList())
+      val intrinsicTags = Map(
+        MessagePackSerializer.ORG_ID -> "1",
+        MessagePackSerializer.NAME -> "a",
+        MessagePackSerializer.INTERVAL -> "60",
+        MetricDefinition.UNIT -> "P",
+        MetricDefinition.MTYPE -> "gauge"
+      )
+      val extrinsicTags = Map[String, String]()
+      val metric = new MetricData(new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava), 0.5202212202357678, 1533174724L)
 
       When("serializing")
       val b = messagePackSerializer.serialize(metric)
@@ -41,7 +50,16 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
 
     it("should serialize a List of MetricData") {
       Given("A list of MetricData")
-      val metrics = List(new MetricData(1, "a", 60, 0.5202212202357678, "P", 1533174724L, "gauge", Collections.emptyList()))
+      val intrinsicTags = Map(
+        MessagePackSerializer.ORG_ID -> "1",
+        MessagePackSerializer.NAME -> "a",
+        MessagePackSerializer.INTERVAL -> "60",
+        MetricDefinition.UNIT -> "P",
+        MetricDefinition.MTYPE -> "gauge"
+      )
+      val extrinsicTags = Map[String, String]()
+      val metric = new MetricData(new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava), 0.5202212202357678, 1533174724L)
+      val metrics = List(metric)
 
       When("serializing")
       val b = messagePackSerializer.serialize(metrics.asJava)
