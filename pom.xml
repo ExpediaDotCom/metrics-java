@@ -16,6 +16,7 @@
   <modules>
     <module>main</module>
     <module>metrictank</module>
+    <module>jackson</module>
   </modules>
 
   <properties>
@@ -29,6 +30,8 @@
 
     <commons-codec.version>1.10</commons-codec.version>
     <commons-lang3.version>3.7</commons-lang3.version>
+    <jackson.version>2.9.6</jackson.version>
+    <json.version>20180130</json.version>
     <msgpack-core.version>0.8.16</msgpack-core.version>
     <scalatest.version>3.0.5</scalatest.version>
   </properties>
@@ -44,6 +47,16 @@
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons-codec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>${json.version}</version>
       </dependency>
       <dependency>
         <groupId>org.msgpack</groupId>

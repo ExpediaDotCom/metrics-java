@@ -29,17 +29,19 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
     val serializedMetric = Base64.getDecoder.decode("iaJpZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqZvcmdfaWQBpG5hbWWhYahpbnRlcnZhbDyldmFsdWXLP+ClpvjzIXmkdW5pdKFQpHRpbWXSW2JjxKVtdHlwZaVnYXVnZaR0YWdzkA==")
     val serializedMetricList = Base64.getDecoder.decode("kYmiaWTZIjEuZDljOThmNDQ1N2I2YWEwNmEwOGU0MDFiMGZiYzk3N2amb3JnX2lkAaRuYW1loWGoaW50ZXJ2YWw8pXZhbHVlyz/gpab48yF5pHVuaXShUKR0aW1l0ltiY8SlbXR5cGWlZ2F1Z2WkdGFnc5A=")
 
+    val intrinsicTags = Map(
+      MessagePackSerializer.ORG_ID -> "1",
+      MessagePackSerializer.NAME -> "a",
+      MessagePackSerializer.INTERVAL -> "60",
+      MetricDefinition.UNIT -> "P",
+      MetricDefinition.MTYPE -> "gauge"
+    )
+    val extrinsicTags = Map[String, String]()
+    val metric = new MetricData(new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava), 0.5202212202357678, 1533174724L)
+    val metrics = List(metric).asJava
+
     it("should serialize a MetricData") {
       Given("A MetricData")
-      val intrinsicTags = Map(
-        MessagePackSerializer.ORG_ID -> "1",
-        MessagePackSerializer.NAME -> "a",
-        MessagePackSerializer.INTERVAL -> "60",
-        MetricDefinition.UNIT -> "P",
-        MetricDefinition.MTYPE -> "gauge"
-      )
-      val extrinsicTags = Map[String, String]()
-      val metric = new MetricData(new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava), 0.5202212202357678, 1533174724L)
 
       When("serializing")
       val b = messagePackSerializer.serialize(metric)
@@ -50,22 +52,33 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
 
     it("should serialize a List of MetricData") {
       Given("A list of MetricData")
-      val intrinsicTags = Map(
-        MessagePackSerializer.ORG_ID -> "1",
-        MessagePackSerializer.NAME -> "a",
-        MessagePackSerializer.INTERVAL -> "60",
-        MetricDefinition.UNIT -> "P",
-        MetricDefinition.MTYPE -> "gauge"
-      )
-      val extrinsicTags = Map[String, String]()
-      val metric = new MetricData(new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava), 0.5202212202357678, 1533174724L)
-      val metrics = List(metric)
 
       When("serializing")
-      val b = messagePackSerializer.serialize(metrics.asJava)
+      val b = messagePackSerializer.serializeList(metrics)
 
       Then("the result should be predictable")
       b should be(serializedMetricList)
+
+    }
+
+    it("should deserialize a MetricData") {
+      Given("A MetricData")
+
+      When("deserializing")
+      val m = messagePackSerializer.deserialize(serializedMetric)
+
+      Then("the result should be predictable")
+      m should be(metric)
+    }
+
+    it("should deserialize a List of MetricData") {
+      Given("A list of MetricData")
+
+      When("deserializing")
+      val l = messagePackSerializer.deserializeList(serializedMetricList)
+
+      Then("the result should be predictable")
+      l should be(metrics)
 
     }
 

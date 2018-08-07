@@ -20,5 +20,7 @@ import java.util.List;
 
 public interface MetricDataSerializer {
     public byte[] serialize(MetricData metric) throws IOException;
-    public byte[] serialize(List<MetricData> metrics) throws IOException;
+    public byte[] serializeList(List<MetricData> metrics) throws IOException;
+    public MetricData deserialize(byte[] bytes) throws IOException;
+    public List<MetricData> deserializeList(byte[] bytes) throws IOException;
 }

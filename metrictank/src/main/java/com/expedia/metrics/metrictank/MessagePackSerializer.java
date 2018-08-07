@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessagePacker;
+import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -48,11 +49,34 @@ public class MessagePackSerializer implements MetricDataSerializer {
     }
 
     @Override
-    public byte[] serialize(List<MetricData> metrics) throws IOException {
+    public byte[] serializeList(List<MetricData> metrics) throws IOException {
         final MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
-        serialize(metrics, packer);
+        packer.packArrayHeader(metrics.size());
+        for (final MetricData metric : metrics) {
+            serialize(metric, packer);
+        }
         packer.close();
         return packer.toByteArray();
+    }
+
+    @Override
+    public MetricData deserialize(byte[] bytes) throws IOException {
+        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
+        MetricData metricData = deserialize(unpacker);
+        unpacker.close();
+        return metricData;
+    }
+
+    @Override
+    public List<MetricData> deserializeList(byte[] bytes) throws IOException {
+        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
+        final int numMetrics = unpacker.unpackArrayHeader();
+        List<MetricData> metrics = new ArrayList<>(numMetrics);
+        for (int i=0; i < numMetrics; i++) {
+            metrics.add(deserialize(unpacker));
+        }
+        unpacker.close();
+        return metrics;
     }
 
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
@@ -98,10 +122,59 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
     }
 
-    private void serialize(List<MetricData> metrics, MessagePacker packer) throws IOException {
-        packer.packArrayHeader(metrics.size());
-        for (final MetricData metric : metrics) {
-            serialize(metric, packer);
+    private MetricData deserialize(MessageUnpacker unpacker) throws IOException {
+        int numFields = unpacker.unpackMapHeader();
+        if (numFields != METRIC_NUM_FIELDS) {
+            throw new IOException("Metric should have "+METRIC_NUM_FIELDS+" fields, but has "+numFields);
+        }
+        unpackString("id", unpacker);
+        final String id = unpacker.unpackString();
+        unpackString("org_id", unpacker);
+        final int orgId = unpacker.unpackInt();
+        unpackString("name", unpacker);
+        final String name = unpacker.unpackString();
+        unpackString("interval", unpacker);
+        final int interval = unpacker.unpackInt();
+        unpackString("value", unpacker);
+        final double value = unpacker.unpackDouble();
+        unpackString("unit", unpacker);
+        final String unit = unpacker.unpackString();
+        unpackString("time", unpacker);
+        final long timestamp = unpacker.unpackLong();
+        unpackString("mtype", unpacker);
+        final String mtype = unpacker.unpackString();
+        unpackString("tags", unpacker);
+        final int numTags = unpacker.unpackArrayHeader();
+        List<String> tags = new ArrayList<>(numTags);
+        for (int i=0; i < numTags; i++) {
+            tags.add(unpacker.unpackString());
+        }
+
+        final Map<String, String> intrinsicTags = new HashMap<>();
+        final Map<String, String> extrinsicTags = Collections.emptyMap();
+
+        intrinsicTags.put(ORG_ID, Integer.toString(orgId));
+        intrinsicTags.put(NAME, name);
+        intrinsicTags.put(INTERVAL, Integer.toString(interval));
+        intrinsicTags.put(MetricDefinition.UNIT, unit);
+        intrinsicTags.put(MetricDefinition.MTYPE, mtype);
+        for (final String tag : tags) {
+            final int pos = tag.indexOf('=');
+            if (pos == -1) {
+                throw new IOException("Read a tag with no '=': "+tag);
+            }
+            final String tagKey = tag.substring(0, pos);
+            final String tagValue = tag.substring(pos+1);
+            intrinsicTags.put(tagKey, tagValue);
+        }
+
+        return new MetricData(new MetricDefinition(intrinsicTags, extrinsicTags), value, timestamp);
+    }
+
+    private void unpackString(String expected, MessageUnpacker unpacker) throws IOException {
+        final String actual = unpacker.unpackString();
+        if (!actual.equals(expected)) {
+            throw new IOException("Expected field "+expected+" but got "+actual);
         }
     }
 
