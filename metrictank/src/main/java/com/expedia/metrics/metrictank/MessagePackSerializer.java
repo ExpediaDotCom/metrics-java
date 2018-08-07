@@ -18,8 +18,6 @@ package com.expedia.metrics.metrictank;
 import com.expedia.metrics.MetricData;
 import com.expedia.metrics.MetricDataSerializer;
 import com.expedia.metrics.MetricDefinition;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessagePacker;
@@ -88,7 +86,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         final Integer interval = Integer.valueOf(tags.remove(INTERVAL));
         final String unit = tags.remove(MetricDefinition.UNIT);
         final String mtype = tags.remove(MetricDefinition.MTYPE);
-        List<String> formattedTags = formatTags(tags);
+        List<String> formattedTags = idFactory.formatTags(tags);
         final String id = idFactory.getId(orgId, name, unit, mtype, interval, formattedTags);
 
         packer.packMapHeader(METRIC_NUM_FIELDS);
@@ -175,25 +173,5 @@ public class MessagePackSerializer implements MetricDataSerializer {
         if (!actual.equals(expected)) {
             throw new IOException("Expected field "+expected+" but got "+actual);
         }
-    }
-
-    static List<String> formatTags(Map<String, String> tags) {
-        List<String> result = new ArrayList<>(tags.size());
-
-        for (Map.Entry<String, String> entry : tags.entrySet()) {
-            final String key = entry.getKey();
-            final String value = entry.getValue();
-
-            if (StringUtils.isEmpty(key) || key.contains("=") || key.contains(";") || key.contains("!")) {
-                throw new IllegalArgumentException("Metric tank does not support key: " + key);
-            }
-            if (StringUtils.isEmpty(value) || value.contains(";")) {
-                throw new IllegalArgumentException("Metric tank does not support value [" + value + "] for key " + key);
-            }
-            result.add(key + "=" + value);
-        }
-
-        Collections.sort(result);
-        return result;
     }
 }

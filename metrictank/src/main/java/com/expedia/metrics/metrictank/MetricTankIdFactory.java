@@ -18,13 +18,12 @@ package com.expedia.metrics.metrictank;
 import com.expedia.metrics.IdFactory;
 import com.expedia.metrics.MetricDefinition;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.expedia.metrics.metrictank.MessagePackSerializer.INTERVAL;
 import static com.expedia.metrics.metrictank.MessagePackSerializer.NAME;
@@ -39,11 +38,11 @@ public class MetricTankIdFactory implements IdFactory {
         final Integer interval = Integer.valueOf(tags.remove(INTERVAL));
         final String unit = tags.remove(MetricDefinition.UNIT);
         final String mtype = tags.remove(MetricDefinition.MTYPE);
-        List<String> formattedTags = MessagePackSerializer.formatTags(tags);
+        List<String> formattedTags = formatTags(tags);
         return getId(orgId, name, unit, mtype, interval, formattedTags);
     }
 
-    String getId(Integer orgId, String name, String unit, String mtype, Integer interval, List<String> tags) {
+    public String getId(Integer orgId, String name, String unit, String mtype, Integer interval, List<String> tags) {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
@@ -66,5 +65,25 @@ public class MetricTankIdFactory implements IdFactory {
                 .append('.')
                 .append(Hex.encodeHex(md.digest()));
         return builder.toString();
+    }
+
+    List<String> formatTags(Map<String, String> tags) {
+        List<String> result = new ArrayList<>(tags.size());
+
+        for (Map.Entry<String, String> entry : tags.entrySet()) {
+            final String key = entry.getKey();
+            final String value = entry.getValue();
+
+            if (StringUtils.isEmpty(key) || key.contains("=") || key.contains(";") || key.contains("!")) {
+                throw new IllegalArgumentException("Metric tank does not support key: " + key);
+            }
+            if (StringUtils.isEmpty(value) || value.contains(";")) {
+                throw new IllegalArgumentException("Metric tank does not support value [" + value + "] for key " + key);
+            }
+            result.add(key + "=" + value);
+        }
+
+        Collections.sort(result);
+        return result;
     }
 }
