@@ -27,9 +27,6 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class MessagePackSerializer implements MetricDataSerializer {
@@ -39,6 +36,8 @@ public class MessagePackSerializer implements MetricDataSerializer {
 
     private static final int METRIC_NUM_FIELDS = 9;
     private static final int INT32_BYTES = 5;
+
+    private final MetricTankIdFactory idFactory = new MetricTankIdFactory();
 
     @Override
     public byte[] serialize(MetricData metric) throws IOException {
@@ -90,7 +89,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         final String unit = tags.remove(MetricDefinition.UNIT);
         final String mtype = tags.remove(MetricDefinition.MTYPE);
         List<String> formattedTags = formatTags(tags);
-        final String id = computeId(orgId, name, unit, mtype, interval, formattedTags);
+        final String id = idFactory.getId(orgId, name, unit, mtype, interval, formattedTags);
 
         packer.packMapHeader(METRIC_NUM_FIELDS);
         packer.packString("id");
@@ -178,33 +177,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
     }
 
-    private String computeId(Integer orgId, String name, String unit, String mtype, Integer interval, List<String> tags) {
-
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("The JRE is missing required digest algorithm MD5", e);
-        }
-        md.update(name.getBytes(StandardCharsets.UTF_8));
-        md.update((byte)0);
-        md.update(unit.getBytes(StandardCharsets.UTF_8));
-        md.update((byte)0);
-        md.update(mtype.getBytes(StandardCharsets.UTF_8));
-        md.update((byte)0);
-        md.update(interval.toString().getBytes(StandardCharsets.UTF_8));
-        for (final String tag : tags) {
-            md.update((byte)0);
-            md.update(tag.getBytes(StandardCharsets.UTF_8));
-        }
-        final StringBuilder builder = new StringBuilder()
-                .append(orgId)
-                .append('.')
-                .append(Hex.encodeHex(md.digest()));
-        return builder.toString();
-    }
-
-    private List<String> formatTags(Map<String, String> tags) {
+    static List<String> formatTags(Map<String, String> tags) {
         List<String> result = new ArrayList<>(tags.size());
 
         for (Map.Entry<String, String> entry : tags.entrySet()) {
