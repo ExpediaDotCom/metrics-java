@@ -24,10 +24,12 @@ public class DefaultIdFactory implements IdFactory {
         final Map<String, String> sortedTags = new TreeMap<>(metric.intrinsicTags);
         final StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> entry : sortedTags.entrySet()) {
-            builder.append(entry.getKey())
-                    .append('=')
-                    .append(entry.getValue())
-                    .append(',');
+            builder.append(entry.getKey());
+            if (entry.getValue() != null) {
+                    builder.append('=')
+                        .append(entry.getValue());
+            }
+            builder.append(',');
         }
         builder.deleteCharAt(builder.length()-1);
         return builder.toString();

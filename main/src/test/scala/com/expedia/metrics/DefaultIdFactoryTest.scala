@@ -26,7 +26,8 @@ class DefaultIdFactoryTest extends FunSpec with Matchers {
     val intrinsicTags = Map(
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge",
-      "intrinsictag" -> "intrinsicvalue"
+      "intrinsictag" -> "intrinsicvalue",
+      "valuetag" -> null
     )
     val extrinsicTags = Map[String, String](
       "extrinsictag" -> "extrinsicvalue"
@@ -36,7 +37,7 @@ class DefaultIdFactoryTest extends FunSpec with Matchers {
 
     it("getId should sort intrinsic tags and ignore extrinsic tags") {
       val id = idFactory.getId(metric)
-      id should be("intrinsictag=intrinsicvalue,mtype=gauge,unit=P")
+      id should be("intrinsictag=intrinsicvalue,mtype=gauge,unit=P,valuetag")
     }
 
   }
