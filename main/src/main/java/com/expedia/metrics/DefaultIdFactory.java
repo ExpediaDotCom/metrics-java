@@ -15,9 +15,15 @@
  */
 package com.expedia.metrics;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
+/**
+ * Creates ids similar to the sample ids in the Metrics 2.0 specification.
+ *
+ * As the tags, keys, and values are sorted and joined with '=' and ',' with no
+ * escaping this may create confusion if your keys or values contain '=' or
+ * ','.
+ */
 public class DefaultIdFactory implements IdFactory {
     @Override
     public String getId(MetricDefinition metric) {
@@ -31,7 +37,9 @@ public class DefaultIdFactory implements IdFactory {
             }
             builder.append(',');
         }
-        for (String tag : metric.tags.v) {
+        final List<String> sortedVTags = new ArrayList<>(metric.tags.v);
+        Collections.sort(sortedVTags);
+        for (String tag : sortedVTags) {
             builder.append(tag)
                     .append(',');
         }
