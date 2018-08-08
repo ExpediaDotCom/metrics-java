@@ -78,14 +78,33 @@ public class MessagePackSerializer implements MetricDataSerializer {
 
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
         if (!metric.metricDefinition.extrinsicTags.isEmpty()) {
-            throw new IllegalArgumentException("Metrictank does not support extrinsic tags");
+            throw new IOException("Metrictank does not support extrinsic tags");
         }
         Map<String, String> tags = new HashMap<>(metric.metricDefinition.intrinsicTags);
-        final Integer orgId = Integer.valueOf(tags.remove(ORG_ID));
+        final int orgId;
+        try {
+            orgId = Integer.parseInt(tags.remove(ORG_ID));
+        } catch (NumberFormatException e) {
+            throw new IOException("Org ID must be an int", e);
+        }
         final String name = tags.remove(NAME);
-        final Integer interval = Integer.valueOf(tags.remove(INTERVAL));
+        if (name == null) {
+            throw new IOException("Name tag is required by metrictank");
+        }
+        final int interval;
+        try {
+            interval = Integer.parseInt(tags.remove(INTERVAL));
+        } catch (NumberFormatException e) {
+            throw new IOException("Interval must be an int", e);
+        }
         final String unit = tags.remove(MetricDefinition.UNIT);
+        if (unit == null) {
+            throw new IOException("Unit tag is required by metrictank");
+        }
         final String mtype = tags.remove(MetricDefinition.MTYPE);
+        if (mtype == null) {
+            throw new IOException("Mtype tag is required by metrictank");
+        }
         List<String> formattedTags = idFactory.formatTags(tags);
         final String id = idFactory.getId(orgId, name, unit, mtype, interval, formattedTags);
 

@@ -20,6 +20,7 @@ import com.expedia.metrics.MetricDefinition;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,16 +34,35 @@ public class MetricTankIdFactory implements IdFactory {
     @Override
     public String getId(MetricDefinition metric) {
         Map<String, String> tags = new HashMap<>(metric.intrinsicTags);
-        final Integer orgId = Integer.valueOf(tags.remove(ORG_ID));
+        final int orgId;
+        try {
+            orgId = Integer.parseInt(tags.remove(ORG_ID));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Org ID must be an int", e);
+        }
         final String name = tags.remove(NAME);
-        final Integer interval = Integer.valueOf(tags.remove(INTERVAL));
+        if (name == null) {
+            throw new IllegalArgumentException("Name tag is required by metrictank");
+        }
+        final int interval;
+        try {
+            interval = Integer.parseInt(tags.remove(INTERVAL));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Interval must be an int", e);
+        }
         final String unit = tags.remove(MetricDefinition.UNIT);
+        if (unit == null) {
+            throw new IllegalArgumentException("Unit tag is required by metrictank");
+        }
         final String mtype = tags.remove(MetricDefinition.MTYPE);
+        if (mtype == null) {
+            throw new IllegalArgumentException("Mtype tag is required by metrictank");
+        }
         List<String> formattedTags = formatTags(tags);
         return getId(orgId, name, unit, mtype, interval, formattedTags);
     }
 
-    public String getId(Integer orgId, String name, String unit, String mtype, Integer interval, List<String> tags) {
+    public String getId(int orgId, String name, String unit, String mtype, int interval, List<String> tags) {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
@@ -55,7 +75,7 @@ public class MetricTankIdFactory implements IdFactory {
         md.update((byte)0);
         md.update(mtype.getBytes(StandardCharsets.UTF_8));
         md.update((byte)0);
-        md.update(interval.toString().getBytes(StandardCharsets.UTF_8));
+        md.update(Integer.toString(interval).getBytes(StandardCharsets.UTF_8));
         for (final String tag : tags) {
             md.update((byte)0);
             md.update(tag.getBytes(StandardCharsets.UTF_8));
