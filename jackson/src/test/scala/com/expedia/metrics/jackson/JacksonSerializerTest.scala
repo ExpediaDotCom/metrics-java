@@ -27,17 +27,17 @@ class JacksonSerializerTest extends FunSpec with Matchers {
 
   describe("JacksonSerializerTest") {
     val jacksonSerializer = new JacksonSerializer()
-    val intrinsicTags = Map(
+    val tags = Map(
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge"
     )
-    val extrinsicTags = Map[String, String](
+    val meta = Map[String, String](
       "tag" -> "value"
     )
-    val metric = new MetricData(new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava), 0.5202212202357678, 1533174724L)
+    val metric = new MetricData(new MetricDefinition(tags.asJava, meta.asJava), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
-    val metricStr = "{\"metricDefinition\":{\"intrinsicTags\":{\"mtype\":\"gauge\",\"unit\":\"P\"},\"extrinsicTags\":{\"tag\":\"value\"}},\"value\":0.5202212202357678,\"timestamp\":1533174724}"
+    val metricStr = "{\"metricDefinition\":{\"tags\":{\"mtype\":\"gauge\",\"unit\":\"P\"},\"meta\":{\"tag\":\"value\"}},\"value\":0.5202212202357678,\"timestamp\":1533174724}"
     val metricJson = new JSONObject(metricStr)
     val metricsStr = "[" + metricStr + "]"
     val metricsJson = new JSONArray(metricsStr)

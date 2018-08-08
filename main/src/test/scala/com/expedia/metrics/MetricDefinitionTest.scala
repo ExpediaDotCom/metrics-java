@@ -21,14 +21,14 @@ import scala.collection.JavaConverters._
 class MetricDefinitionTest extends FunSpec with Matchers  {
   describe("a MetricDefinition") {
     it("should require a unit") {
-      val intrinsicTags = Map("mtype" -> "guage")
-      val extrinsicTags = Map[String, String]()
-      an [IllegalArgumentException] should be thrownBy new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava)
+      val tags = Map("mtype" -> "gauge")
+      val meta = Map[String, String]()
+      an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags.asJava, meta.asJava)
     }
     it("should require an mtype") {
-      val intrinsicTags = Map("unit" -> "P")
-      val extrinsicTags = Map[String, String]()
-      an [IllegalArgumentException] should be thrownBy new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava)
+      val tags = Map("unit" -> "P")
+      val meta = Map[String, String]()
+      an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags.asJava, meta.asJava)
     }
   }
 }

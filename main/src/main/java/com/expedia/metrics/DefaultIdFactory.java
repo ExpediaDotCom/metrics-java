@@ -21,7 +21,7 @@ import java.util.TreeMap;
 public class DefaultIdFactory implements IdFactory {
     @Override
     public String getId(MetricDefinition metric) {
-        final Map<String, String> sortedTags = new TreeMap<>(metric.intrinsicTags);
+        final Map<String, String> sortedTags = new TreeMap<>(metric.tags);
         final StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> entry : sortedTags.entrySet()) {
             builder.append(entry.getKey());

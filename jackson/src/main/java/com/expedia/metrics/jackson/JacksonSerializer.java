@@ -67,7 +67,7 @@ public class JacksonSerializer implements MetricDataSerializer {
     private static class MetricDefinitionMixin {
         @JsonCreator
         MetricDefinitionMixin(
-                @JsonProperty("intrinsicTags") Map<String, String> intrinsicTags,
-                @JsonProperty("extrinsicTags") Map<String, String> extrinsicTags) {}
+                @JsonProperty("tags") Map<String, String> tags,
+                @JsonProperty("meta") Map<String, String> meta) {}
     }
 }

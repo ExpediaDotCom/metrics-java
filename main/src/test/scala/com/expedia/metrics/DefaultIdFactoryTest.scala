@@ -23,21 +23,21 @@ class DefaultIdFactoryTest extends FunSpec with Matchers {
 
   describe("DefaultIdFactoryTest") {
     val idFactory = new DefaultIdFactory()
-    val intrinsicTags = Map(
+    val tags = Map(
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge",
-      "intrinsictag" -> "intrinsicvalue",
+      "tag" -> "value",
       "valuetag" -> null
     )
-    val extrinsicTags = Map[String, String](
-      "extrinsictag" -> "extrinsicvalue"
+    val meta = Map[String, String](
+      "metatag" -> "metavalue"
     )
-    val metric = new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava)
+    val metric = new MetricDefinition(tags.asJava, meta.asJava)
 
 
-    it("getId should sort intrinsic tags and ignore extrinsic tags") {
+    it("getId should sort tags and ignore meta tags") {
       val id = idFactory.getId(metric)
-      id should be("intrinsictag=intrinsicvalue,mtype=gauge,unit=P,valuetag")
+      id should be("mtype=gauge,tag=value,unit=P,valuetag")
     }
 
   }

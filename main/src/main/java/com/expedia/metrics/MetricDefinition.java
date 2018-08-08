@@ -27,19 +27,17 @@ public class MetricDefinition {
         REQUIRED_TAGS.add(MTYPE);
     }
 
-    public final Map<String, String> intrinsicTags;
-    public final Map<String, String> extrinsicTags;
+    public final Map<String, String> tags;
+    public final Map<String, String> meta;
 
-    public MetricDefinition(Map<String, String> intrinsicTags, Map<String, String> extrinsicTags) {
+    public MetricDefinition(Map<String, String> tags, Map<String, String> meta) {
         for (String tag : REQUIRED_TAGS) {
-            if (!intrinsicTags.containsKey(tag)) {
-                throw new IllegalArgumentException("Missing required intrinsic tag: " + tag);
+            if (!tags.containsKey(tag)) {
+                throw new IllegalArgumentException("Missing required tag: " + tag);
             }
         }
-        Map<String, String> map = new HashMap<>(intrinsicTags);
-        this.intrinsicTags = Collections.unmodifiableMap(map);
-        map = new HashMap<>(extrinsicTags);
-        this.extrinsicTags = Collections.unmodifiableMap(map);
+        this.tags = Collections.unmodifiableMap(new HashMap<>(tags));
+        this.meta = Collections.unmodifiableMap(new HashMap<>(meta));
     }
 
     @Override
@@ -51,14 +49,14 @@ public class MetricDefinition {
         MetricDefinition that = (MetricDefinition) o;
 
         return new org.apache.commons.lang3.builder.EqualsBuilder()
-                .append(intrinsicTags, that.intrinsicTags)
+                .append(tags, that.tags)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new org.apache.commons.lang3.builder.HashCodeBuilder(17, 37)
-                .append(intrinsicTags)
+                .append(tags)
                 .toHashCode();
     }
 }

@@ -77,10 +77,10 @@ public class MessagePackSerializer implements MetricDataSerializer {
     }
 
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
-        if (!metric.metricDefinition.extrinsicTags.isEmpty()) {
-            throw new IOException("Metrictank does not support extrinsic tags");
+        if (!metric.metricDefinition.meta.isEmpty()) {
+            throw new IOException("Metrictank does not support meta tags");
         }
-        Map<String, String> tags = new HashMap<>(metric.metricDefinition.intrinsicTags);
+        Map<String, String> tags = new HashMap<>(metric.metricDefinition.tags);
         final int orgId;
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));
@@ -161,30 +161,30 @@ public class MessagePackSerializer implements MetricDataSerializer {
         final String mtype = unpacker.unpackString();
         unpackString("tags", unpacker);
         final int numTags = unpacker.unpackArrayHeader();
-        List<String> tags = new ArrayList<>(numTags);
+        List<String> rawTags = new ArrayList<>(numTags);
         for (int i=0; i < numTags; i++) {
-            tags.add(unpacker.unpackString());
+            rawTags.add(unpacker.unpackString());
         }
 
-        final Map<String, String> intrinsicTags = new HashMap<>();
-        final Map<String, String> extrinsicTags = Collections.emptyMap();
+        final Map<String, String> tags = new HashMap<>();
+        final Map<String, String> meta = Collections.emptyMap();
 
-        intrinsicTags.put(ORG_ID, Integer.toString(orgId));
-        intrinsicTags.put(NAME, name);
-        intrinsicTags.put(INTERVAL, Integer.toString(interval));
-        intrinsicTags.put(MetricDefinition.UNIT, unit);
-        intrinsicTags.put(MetricDefinition.MTYPE, mtype);
-        for (final String tag : tags) {
+        tags.put(ORG_ID, Integer.toString(orgId));
+        tags.put(NAME, name);
+        tags.put(INTERVAL, Integer.toString(interval));
+        tags.put(MetricDefinition.UNIT, unit);
+        tags.put(MetricDefinition.MTYPE, mtype);
+        for (final String tag : rawTags) {
             final int pos = tag.indexOf('=');
             if (pos == -1) {
                 throw new IOException("Read a tag with no '=': "+tag);
             }
             final String tagKey = tag.substring(0, pos);
             final String tagValue = tag.substring(pos+1);
-            intrinsicTags.put(tagKey, tagValue);
+            tags.put(tagKey, tagValue);
         }
 
-        return new MetricData(new MetricDefinition(intrinsicTags, extrinsicTags), value, timestamp);
+        return new MetricData(new MetricDefinition(tags, meta), value, timestamp);
     }
 
     private void unpackString(String expected, MessageUnpacker unpacker) throws IOException {

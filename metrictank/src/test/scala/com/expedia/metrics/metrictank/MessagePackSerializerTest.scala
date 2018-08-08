@@ -29,15 +29,15 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
     val serializedMetric = Base64.getDecoder.decode("iaJpZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqZvcmdfaWQBpG5hbWWhYahpbnRlcnZhbDyldmFsdWXLP+ClpvjzIXmkdW5pdKFQpHRpbWXSW2JjxKVtdHlwZaVnYXVnZaR0YWdzkA==")
     val serializedMetricList = Base64.getDecoder.decode("kYmiaWTZIjEuZDljOThmNDQ1N2I2YWEwNmEwOGU0MDFiMGZiYzk3N2amb3JnX2lkAaRuYW1loWGoaW50ZXJ2YWw8pXZhbHVlyz/gpab48yF5pHVuaXShUKR0aW1l0ltiY8SlbXR5cGWlZ2F1Z2WkdGFnc5A=")
 
-    val intrinsicTags = Map(
+    val tags = Map(
       MessagePackSerializer.ORG_ID -> "1",
       MessagePackSerializer.NAME -> "a",
       MessagePackSerializer.INTERVAL -> "60",
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge"
     )
-    val extrinsicTags = Map[String, String]()
-    val metric = new MetricData(new MetricDefinition(intrinsicTags.asJava, extrinsicTags.asJava), 0.5202212202357678, 1533174724L)
+    val meta = Map[String, String]()
+    val metric = new MetricData(new MetricDefinition(tags.asJava, meta.asJava), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
     it("should serialize a MetricData") {

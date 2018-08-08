@@ -20,7 +20,6 @@ import com.expedia.metrics.MetricDefinition;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,7 +32,7 @@ import static com.expedia.metrics.metrictank.MessagePackSerializer.ORG_ID;
 public class MetricTankIdFactory implements IdFactory {
     @Override
     public String getId(MetricDefinition metric) {
-        Map<String, String> tags = new HashMap<>(metric.intrinsicTags);
+        Map<String, String> tags = new HashMap<>(metric.tags);
         final int orgId;
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));
