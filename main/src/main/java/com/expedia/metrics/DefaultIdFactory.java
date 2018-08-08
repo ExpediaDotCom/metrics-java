@@ -21,15 +21,19 @@ import java.util.TreeMap;
 public class DefaultIdFactory implements IdFactory {
     @Override
     public String getId(MetricDefinition metric) {
-        final Map<String, String> sortedTags = new TreeMap<>(metric.tags);
+        final Map<String, String> sortedKvTags = new TreeMap<>(metric.tags.kv);
         final StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, String> entry : sortedTags.entrySet()) {
+        for (Map.Entry<String, String> entry : sortedKvTags.entrySet()) {
             builder.append(entry.getKey());
             if (entry.getValue() != null) {
                     builder.append('=')
                         .append(entry.getValue());
             }
             builder.append(',');
+        }
+        for (String tag : metric.tags.v) {
+            builder.append(tag)
+                    .append(',');
         }
         if (builder.length() > 0) {
             builder.deleteCharAt(builder.length() - 1);

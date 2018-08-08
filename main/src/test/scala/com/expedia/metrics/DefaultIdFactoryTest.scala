@@ -23,16 +23,15 @@ class DefaultIdFactoryTest extends FunSpec with Matchers {
 
   describe("DefaultIdFactoryTest") {
     val idFactory = new DefaultIdFactory()
-    val tags = Map(
+    val tags = new TagCollection(Map(
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge",
-      "tag" -> "value",
-      "valuetag" -> null
-    )
-    val meta = Map[String, String](
+      "tag" -> "value"
+    ).asJava, List("valuetag").asJava)
+    val meta = new TagCollection(Map[String, String](
       "metatag" -> "metavalue"
-    )
-    val metric = new MetricDefinition(tags.asJava, meta.asJava)
+    ).asJava)
+    val metric = new MetricDefinition(tags, meta)
 
 
     it("getId should sort tags and ignore meta tags") {

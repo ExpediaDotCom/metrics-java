@@ -18,7 +18,9 @@ package com.expedia.metrics.jackson;
 import com.expedia.metrics.MetricData;
 import com.expedia.metrics.MetricDataSerializer;
 import com.expedia.metrics.MetricDefinition;
+import com.expedia.metrics.TagCollection;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +36,7 @@ public class JacksonSerializer implements MetricDataSerializer {
         mapper = new ObjectMapper();
         mapper.addMixIn(MetricData.class, MetricDataMixin.class);
         mapper.addMixIn(MetricDefinition.class, MetricDefinitionMixin.class);
+        mapper.addMixIn(TagCollection.class, TagCollectionMixin.class);
     }
 
     @Override
@@ -67,7 +70,17 @@ public class JacksonSerializer implements MetricDataSerializer {
     private static class MetricDefinitionMixin {
         @JsonCreator
         MetricDefinitionMixin(
-                @JsonProperty("tags") Map<String, String> tags,
-                @JsonProperty("meta") Map<String, String> meta) {}
+                @JsonProperty("tags") TagCollection tags,
+                @JsonProperty("meta") TagCollection meta) {}
+    }
+
+    private static class TagCollectionMixin {
+        @JsonCreator
+        TagCollectionMixin(
+                @JsonProperty("kv") Map<String, String> kv,
+                @JsonProperty("v") List<String> v) {}
+
+        @JsonIgnore
+        boolean isEmpty() {return true;}
     }
 }

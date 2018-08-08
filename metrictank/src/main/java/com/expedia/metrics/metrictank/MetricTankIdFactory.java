@@ -32,7 +32,7 @@ import static com.expedia.metrics.metrictank.MessagePackSerializer.ORG_ID;
 public class MetricTankIdFactory implements IdFactory {
     @Override
     public String getId(MetricDefinition metric) {
-        Map<String, String> tags = new HashMap<>(metric.tags);
+        Map<String, String> tags = new HashMap<>(metric.tags.kv);
         final int orgId;
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));

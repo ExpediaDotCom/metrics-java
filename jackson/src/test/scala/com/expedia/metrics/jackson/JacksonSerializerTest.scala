@@ -16,8 +16,9 @@
 package com.expedia.metrics.jackson
 
 import java.nio.charset.StandardCharsets
+import java.util.Collections
 
-import com.expedia.metrics.{MetricData, MetricDefinition}
+import com.expedia.metrics.{MetricData, MetricDefinition, TagCollection}
 import org.json.{JSONArray, JSONObject}
 import org.scalatest.{FunSpec, Matchers}
 
@@ -27,17 +28,17 @@ class JacksonSerializerTest extends FunSpec with Matchers {
 
   describe("JacksonSerializerTest") {
     val jacksonSerializer = new JacksonSerializer()
-    val tags = Map(
+    val tags = new TagCollection(Map(
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge"
-    )
-    val meta = Map[String, String](
+    ).asJava)
+    val meta = new TagCollection(Map[String, String](
       "tag" -> "value"
-    )
-    val metric = new MetricData(new MetricDefinition(tags.asJava, meta.asJava), 0.5202212202357678, 1533174724L)
+    ).asJava)
+    val metric = new MetricData(new MetricDefinition(tags, meta), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
-    val metricStr = "{\"metricDefinition\":{\"tags\":{\"mtype\":\"gauge\",\"unit\":\"P\"},\"meta\":{\"tag\":\"value\"}},\"value\":0.5202212202357678,\"timestamp\":1533174724}"
+    val metricStr = "{\"metricDefinition\":{\"tags\":{\"kv\":{\"mtype\":\"gauge\",\"unit\":\"P\"},\"v\":[]},\"meta\":{\"kv\":{\"tag\":\"value\"},\"v\":[]}},\"value\":0.5202212202357678,\"timestamp\":1533174724}"
     val metricJson = new JSONObject(metricStr)
     val metricsStr = "[" + metricStr + "]"
     val metricsJson = new JSONArray(metricsStr)

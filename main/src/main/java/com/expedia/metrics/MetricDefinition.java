@@ -27,17 +27,17 @@ public class MetricDefinition {
         REQUIRED_TAGS.add(MTYPE);
     }
 
-    public final Map<String, String> tags;
-    public final Map<String, String> meta;
+    public final TagCollection tags;
+    public final TagCollection meta;
 
-    public MetricDefinition(Map<String, String> tags, Map<String, String> meta) {
+    public MetricDefinition(TagCollection tags, TagCollection meta) {
         for (String tag : REQUIRED_TAGS) {
-            if (!tags.containsKey(tag)) {
+            if (!tags.kv.containsKey(tag)) {
                 throw new IllegalArgumentException("Missing required tag: " + tag);
             }
         }
-        this.tags = Collections.unmodifiableMap(new HashMap<>(tags));
-        this.meta = Collections.unmodifiableMap(new HashMap<>(meta));
+        this.tags = tags;
+        this.meta = meta;
     }
 
     @Override

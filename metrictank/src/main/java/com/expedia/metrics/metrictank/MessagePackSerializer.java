@@ -18,6 +18,7 @@ package com.expedia.metrics.metrictank;
 import com.expedia.metrics.MetricData;
 import com.expedia.metrics.MetricDataSerializer;
 import com.expedia.metrics.MetricDefinition;
+import com.expedia.metrics.TagCollection;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessagePacker;
@@ -80,7 +81,10 @@ public class MessagePackSerializer implements MetricDataSerializer {
         if (!metric.metricDefinition.meta.isEmpty()) {
             throw new IOException("Metrictank does not support meta tags");
         }
-        Map<String, String> tags = new HashMap<>(metric.metricDefinition.tags);
+        if (!metric.metricDefinition.tags.v.isEmpty()) {
+            throw new IOException("Metrictank does not support value tags");
+        }
+        Map<String, String> tags = new HashMap<>(metric.metricDefinition.tags.kv);
         final int orgId;
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));
@@ -166,14 +170,13 @@ public class MessagePackSerializer implements MetricDataSerializer {
             rawTags.add(unpacker.unpackString());
         }
 
-        final Map<String, String> tags = new HashMap<>();
-        final Map<String, String> meta = Collections.emptyMap();
+        final Map<String, String> kvTags = new HashMap<>();
 
-        tags.put(ORG_ID, Integer.toString(orgId));
-        tags.put(NAME, name);
-        tags.put(INTERVAL, Integer.toString(interval));
-        tags.put(MetricDefinition.UNIT, unit);
-        tags.put(MetricDefinition.MTYPE, mtype);
+        kvTags.put(ORG_ID, Integer.toString(orgId));
+        kvTags.put(NAME, name);
+        kvTags.put(INTERVAL, Integer.toString(interval));
+        kvTags.put(MetricDefinition.UNIT, unit);
+        kvTags.put(MetricDefinition.MTYPE, mtype);
         for (final String tag : rawTags) {
             final int pos = tag.indexOf('=');
             if (pos == -1) {
@@ -181,10 +184,11 @@ public class MessagePackSerializer implements MetricDataSerializer {
             }
             final String tagKey = tag.substring(0, pos);
             final String tagValue = tag.substring(pos+1);
-            tags.put(tagKey, tagValue);
+            kvTags.put(tagKey, tagValue);
         }
 
-        return new MetricData(new MetricDefinition(tags, meta), value, timestamp);
+        TagCollection tags = new TagCollection(kvTags);
+        return new MetricData(new MetricDefinition(tags, TagCollection.EMPTY), value, timestamp);
     }
 
     private void unpackString(String expected, MessageUnpacker unpacker) throws IOException {
