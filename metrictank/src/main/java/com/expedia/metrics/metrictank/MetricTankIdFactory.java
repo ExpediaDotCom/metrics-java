@@ -86,7 +86,7 @@ public class MetricTankIdFactory implements IdFactory {
         return builder.toString();
     }
 
-    List<String> formatTags(Map<String, String> tags) {
+    public List<String> formatTags(Map<String, String> tags) {
         List<String> result = new ArrayList<>(tags.size());
 
         for (Map.Entry<String, String> entry : tags.entrySet()) {
