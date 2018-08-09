@@ -34,7 +34,6 @@ public class MessagePackSerializer implements MetricDataSerializer {
     public static final String INTERVAL = "interval";
 
     private static final int METRIC_NUM_FIELDS = 9;
-    private static final int INT32_BYTES = 5;
 
     private final MetricTankIdFactory idFactory = new MetricTankIdFactory();
 
@@ -127,10 +126,10 @@ public class MessagePackSerializer implements MetricDataSerializer {
         packer.packString(unit);
         packer.packString("time");
 
-        // packLong auto converts to narrowest int type, but Raintank requires a signed int, so we manually pack the time
-        final ByteBuffer b = ByteBuffer.allocate(INT32_BYTES);
-        b.put(MessagePack.Code.INT32);
-        b.putInt(metric.timestamp.intValue());
+        // packLong auto converts to narrowest int type, but Raintank requires a signed int64, so we manually pack the time
+        final ByteBuffer b = ByteBuffer.allocate(1 + Long.BYTES);
+        b.put(MessagePack.Code.INT64);
+        b.putLong(metric.timestamp);
         packer.addPayload(b.array());
 
         packer.packString("mtype");

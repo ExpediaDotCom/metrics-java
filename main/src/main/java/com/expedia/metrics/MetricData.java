@@ -20,10 +20,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class MetricData {
     public final MetricDefinition metricDefinition;
-    public final Double value;
-    public final Long timestamp;
+    public final double value;
+    public final long timestamp;
 
-    public MetricData(MetricDefinition metricDefinition, Double value, Long timestamp) {
+    public MetricData(MetricDefinition metricDefinition, double value, long timestamp) {
         this.metricDefinition = metricDefinition;
         this.value = value;
         this.timestamp = timestamp;

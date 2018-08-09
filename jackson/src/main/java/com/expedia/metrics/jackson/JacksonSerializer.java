@@ -63,8 +63,8 @@ public class JacksonSerializer implements MetricDataSerializer {
         @JsonCreator
         MetricDataMixin(
                 @JsonProperty("metricDefinition") MetricDefinition metricDefinition,
-                @JsonProperty("value") Double value,
-                @JsonProperty("timestamp") Long timestamp) {}
+                @JsonProperty("value") double value,
+                @JsonProperty("timestamp") long timestamp) {}
     }
 
     private static class MetricDefinitionMixin {
