@@ -21,11 +21,7 @@ public class MetricDefinition {
     public static final String UNIT = "unit";
     public static final String MTYPE = "mtype";
 
-    private static final List<String> REQUIRED_TAGS = new ArrayList<>(2);
-    static {
-        REQUIRED_TAGS.add(UNIT);
-        REQUIRED_TAGS.add(MTYPE);
-    }
+    private static final List<String> REQUIRED_TAGS = Arrays.asList(UNIT, MTYPE);
 
     public final TagCollection tags;
     public final TagCollection meta;
