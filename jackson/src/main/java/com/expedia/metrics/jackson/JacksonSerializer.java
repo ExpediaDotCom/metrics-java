@@ -60,6 +60,7 @@ public class JacksonSerializer implements MetricDataSerializer {
     }
 
     private static class MetricDataMixin {
+        @SuppressWarnings("PMD.UnusedFormalParameter")
         @JsonCreator
         MetricDataMixin(
                 @JsonProperty("metricDefinition") MetricDefinition metricDefinition,
@@ -68,6 +69,7 @@ public class JacksonSerializer implements MetricDataSerializer {
     }
 
     private static class MetricDefinitionMixin {
+        @SuppressWarnings("PMD.UnusedFormalParameter")
         @JsonCreator
         MetricDefinitionMixin(
                 @JsonProperty("tags") TagCollection tags,
@@ -75,6 +77,7 @@ public class JacksonSerializer implements MetricDataSerializer {
     }
 
     private static class TagCollectionMixin {
+        @SuppressWarnings("PMD.UnusedFormalParameter")
         @JsonCreator
         TagCollectionMixin(
                 @JsonProperty("kv") Map<String, String> kv,

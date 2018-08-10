@@ -16,5 +16,5 @@
 package com.expedia.metrics;
 
 public interface IdFactory {
-    public String getId(MetricDefinition metric);
+    String getId(MetricDefinition metric);
 }

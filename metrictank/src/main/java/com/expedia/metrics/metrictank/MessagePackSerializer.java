@@ -147,7 +147,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
             throw new IOException("Metric should have "+METRIC_NUM_FIELDS+" fields, but has "+numFields);
         }
         unpackString("id", unpacker);
-        final String id = unpacker.unpackString();
+        unpacker.unpackString();
         unpackString("org_id", unpacker);
         final int orgId = unpacker.unpackInt();
         unpackString("name", unpacker);
