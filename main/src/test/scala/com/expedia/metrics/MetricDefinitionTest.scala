@@ -21,11 +21,11 @@ import scala.collection.JavaConverters._
 class MetricDefinitionTest extends FunSpec with Matchers  {
   describe("a MetricDefinition") {
     it("should require a unit") {
-      val tags = new TagCollection(Map("mtype" -> "gauge").asJava, List[String]().asJava)
+      val tags = new TagCollection(Map("mtype" -> "gauge").asJava, Set[String]().asJava)
       an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags, TagCollection.EMPTY)
     }
     it("should require an mtype") {
-      val tags = new TagCollection(Map("unit" -> "P").asJava, List[String]().asJava)
+      val tags = new TagCollection(Map("unit" -> "P").asJava, Set[String]().asJava)
       an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags, TagCollection.EMPTY)
     }
   }

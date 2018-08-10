@@ -28,9 +28,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class JacksonSerializer implements MetricDataSerializer {
-    final ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public JacksonSerializer() {
         mapper = new ObjectMapper();
@@ -81,7 +82,7 @@ public class JacksonSerializer implements MetricDataSerializer {
         @JsonCreator
         TagCollectionMixin(
                 @JsonProperty("kv") Map<String, String> kv,
-                @JsonProperty("v") List<String> v) {}
+                @JsonProperty("v") Set<String> v) {}
 
         @JsonIgnore
         boolean isEmpty() {return true;}

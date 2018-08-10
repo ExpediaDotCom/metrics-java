@@ -21,18 +21,18 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.*;
 
 public class TagCollection {
-    public static final TagCollection EMPTY = new TagCollection(Collections.emptyMap(), Collections.emptyList());
+    public static final TagCollection EMPTY = new TagCollection(Collections.emptyMap(), Collections.emptySet());
 
     public final Map<String, String> kv;
-    public final List<String> v;
+    public final Set<String> v;
 
     public TagCollection(Map<String, String> kv) {
-        this(kv, Collections.emptyList());
+        this(kv, Collections.emptySet());
     }
 
-    public TagCollection(Map<String, String> kv, List<String> v) {
+    public TagCollection(Map<String, String> kv, Set<String> v) {
         this.kv = Collections.unmodifiableMap(new HashMap<>(kv));
-        this.v = Collections.unmodifiableList(new ArrayList<>(v));
+        this.v = Collections.unmodifiableSet(new HashSet<>(v));
     }
 
     public boolean isEmpty() {

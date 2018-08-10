@@ -27,7 +27,7 @@ class DefaultIdFactoryTest extends FunSpec with Matchers {
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge",
       "tag" -> "value"
-    ).asJava, List("valuetag").asJava)
+    ).asJava, Set("valuetag").asJava)
     val meta = new TagCollection(Map[String, String](
       "metatag" -> "metavalue"
     ).asJava)
