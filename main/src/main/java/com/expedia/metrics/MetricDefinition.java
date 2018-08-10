@@ -43,20 +43,13 @@ public class MetricDefinition {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
-
         MetricDefinition that = (MetricDefinition) o;
-
-        return new org.apache.commons.lang3.builder.EqualsBuilder()
-                .append(tags, that.tags)
-                .isEquals();
+        return Objects.equals(tags, that.tags);
     }
 
     @Override
     public int hashCode() {
-        return new org.apache.commons.lang3.builder.HashCodeBuilder(17, 37)
-                .append(tags)
-                .toHashCode();
+        return Objects.hash(tags);
     }
 }

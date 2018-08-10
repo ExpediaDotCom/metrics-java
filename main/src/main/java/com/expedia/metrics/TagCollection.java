@@ -15,9 +15,6 @@
  */
 package com.expedia.metrics;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.util.*;
 
 public class TagCollection {
@@ -42,22 +39,14 @@ public class TagCollection {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
-
         TagCollection that = (TagCollection) o;
-
-        return new EqualsBuilder()
-                .append(kv, that.kv)
-                .append(v, that.v)
-                .isEquals();
+        return Objects.equals(kv, that.kv) &&
+                Objects.equals(v, that.v);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(kv)
-                .append(v)
-                .toHashCode();
+        return Objects.hash(kv, v);
     }
 }

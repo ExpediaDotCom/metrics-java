@@ -15,8 +15,7 @@
  */
 package com.expedia.metrics;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.Objects;
 
 public class MetricData {
     public final MetricDefinition metricDefinition;
@@ -32,24 +31,17 @@ public class MetricData {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
-
         MetricData that = (MetricData) o;
-
-        return new EqualsBuilder()
-                .append(metricDefinition, that.metricDefinition)
-                .append(value, that.value)
-                .append(timestamp, that.timestamp)
-                .isEquals();
+        return Objects.equals(metricDefinition, that.metricDefinition) &&
+                value == that.value &&
+                timestamp == that.timestamp;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(metricDefinition)
-                .append(value)
-                .append(timestamp)
-                .toHashCode();
+        return metricDefinition.hashCode() ^
+                31 * Double.hashCode(value) ^
+                17 * Long.hashCode(timestamp);
     }
 }

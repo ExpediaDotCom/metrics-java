@@ -18,7 +18,6 @@ package com.expedia.metrics.metrictank;
 import com.expedia.metrics.IdFactory;
 import com.expedia.metrics.MetricDefinition;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -93,10 +92,10 @@ public class MetricTankIdFactory implements IdFactory {
             final String key = entry.getKey();
             final String value = entry.getValue();
 
-            if (StringUtils.isEmpty(key) || key.contains("=") || key.contains(";") || key.contains("!")) {
+            if (key == null || key.isEmpty() || key.contains("=") || key.contains(";") || key.contains("!")) {
                 throw new IllegalArgumentException("Metric tank does not support key: " + key);
             }
-            if (StringUtils.isEmpty(value) || value.contains(";")) {
+            if (value == null || value.isEmpty() || value.contains(";")) {
                 throw new IllegalArgumentException("Metric tank does not support value [" + value + "] for key " + key);
             }
             result.add(key + "=" + value);

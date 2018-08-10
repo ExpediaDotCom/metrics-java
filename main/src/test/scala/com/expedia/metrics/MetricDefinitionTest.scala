@@ -20,12 +20,27 @@ import scala.collection.JavaConverters._
 
 class MetricDefinitionTest extends FunSpec with Matchers  {
   describe("a MetricDefinition") {
+    it("should be equal to a metric definision with different meta tags") {
+      val tags = new TagCollection(Map(
+        "mtype" -> "gauge",
+        "unit" -> "P"
+      ).asJava)
+      val meta1 = new TagCollection(Map(
+        "tag1" -> "value1"
+      ).asJava)
+      val meta2 = new TagCollection(Map(
+        "tag2" -> "value2"
+      ).asJava)
+      val metric1 = new MetricDefinition(tags, meta1)
+      val metric2 = new MetricDefinition(tags, meta2)
+      metric1 should equal(metric2)
+    }
     it("should require a unit") {
-      val tags = new TagCollection(Map("mtype" -> "gauge").asJava, Set[String]().asJava)
+      val tags = new TagCollection(Map("mtype" -> "gauge").asJava)
       an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags, TagCollection.EMPTY)
     }
     it("should require an mtype") {
-      val tags = new TagCollection(Map("unit" -> "P").asJava, Set[String]().asJava)
+      val tags = new TagCollection(Map("unit" -> "P").asJava)
       an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags, TagCollection.EMPTY)
     }
   }
