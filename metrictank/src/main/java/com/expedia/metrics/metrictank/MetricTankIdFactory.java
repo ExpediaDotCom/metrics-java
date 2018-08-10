@@ -17,7 +17,6 @@ package com.expedia.metrics.metrictank;
 
 import com.expedia.metrics.IdFactory;
 import com.expedia.metrics.MetricDefinition;
-import org.apache.commons.codec.binary.Hex;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -29,6 +28,8 @@ import static com.expedia.metrics.metrictank.MessagePackSerializer.NAME;
 import static com.expedia.metrics.metrictank.MessagePackSerializer.ORG_ID;
 
 public class MetricTankIdFactory implements IdFactory {
+    private static final char[] HEX_DIGITS = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+
     @Override
     public String getId(MetricDefinition metric) {
         Map<String, String> tags = new HashMap<>(metric.tags.kv);
@@ -78,10 +79,15 @@ public class MetricTankIdFactory implements IdFactory {
             md.update((byte)0);
             md.update(tag.getBytes(StandardCharsets.UTF_8));
         }
-        final StringBuilder builder = new StringBuilder()
+        String orgIdStr = Integer.toString(orgId);
+        byte[] md5sum = md.digest();
+        final StringBuilder builder = new StringBuilder(orgIdStr.length() + 1 + md5sum.length*2)
                 .append(orgId)
-                .append('.')
-                .append(Hex.encodeHex(md.digest()));
+                .append('.');
+        for (byte b : md5sum) { // Append md5sum as a hex string
+            builder.append(HEX_DIGITS[(0xF0 & b) >>> 4])
+                    .append(HEX_DIGITS[0x0F & b]);
+        }
         return builder.toString();
     }
 
