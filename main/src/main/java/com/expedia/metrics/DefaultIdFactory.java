@@ -27,7 +27,7 @@ import java.util.*;
 public class DefaultIdFactory implements IdFactory {
     @Override
     public String getId(MetricDefinition metric) {
-        final SortedMap<String, String> sortedKvTags = new TreeMap<>(metric.tags.kv);
+        final SortedMap<String, String> sortedKvTags = new TreeMap<>(metric.getTags().getKv());
         final StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> entry : sortedKvTags.entrySet()) {
             builder.append(entry.getKey());
@@ -37,7 +37,7 @@ public class DefaultIdFactory implements IdFactory {
             }
             builder.append(',');
         }
-        final SortedSet<String> sortedVTags = new TreeSet<>(metric.tags.v);
+        final SortedSet<String> sortedVTags = new TreeSet<>(metric.getTags().getV());
         for (String tag : sortedVTags) {
             builder.append(tag)
                     .append(',');

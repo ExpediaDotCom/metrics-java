@@ -20,16 +20,41 @@ import java.util.*;
 public class TagCollection {
     public static final TagCollection EMPTY = new TagCollection(Collections.emptyMap(), Collections.emptySet());
 
-    public final Map<String, String> kv;
-    public final Set<String> v;
+    private final Map<String, String> kv;
+    private final Set<String> v;
 
+    /**
+     * Constructs a TagCollection with the supplied key value tags and no value tags.
+     * The supplied tags are copied, so changes to the passed collections will not be reflected in the TagCollection
+     * @param kv Map of key value tags
+     */
     public TagCollection(Map<String, String> kv) {
         this(kv, Collections.emptySet());
     }
 
+    /**
+     * Constructs a TagCollection with the supplied key value tags and value tags.
+     * The supplied tags are copied, so changes to the passed collections will not be reflected in the TagCollection
+     * @param kv Map of key value tags
+     * @param v Set of value tags
+     */
     public TagCollection(Map<String, String> kv, Set<String> v) {
         this.kv = Collections.unmodifiableMap(new HashMap<>(kv));
         this.v = Collections.unmodifiableSet(new HashSet<>(v));
+    }
+
+    /**
+     * @return An unmodifiable copy of this collection's key value tags
+     */
+    public Map<String, String> getKv() {
+        return kv;
+    }
+
+    /**
+     * @return An unmodifiable copy of this collection's value tags
+     */
+    public Set<String> getV() {
+        return v;
     }
 
     public boolean isEmpty() {

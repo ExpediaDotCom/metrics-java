@@ -18,14 +18,26 @@ package com.expedia.metrics;
 import java.util.Objects;
 
 public class MetricData {
-    public final MetricDefinition metricDefinition;
-    public final double value;
-    public final long timestamp;
+    private final MetricDefinition metricDefinition;
+    private final double value;
+    private final long timestamp;
 
     public MetricData(MetricDefinition metricDefinition, double value, long timestamp) {
         this.metricDefinition = metricDefinition;
         this.value = value;
         this.timestamp = timestamp;
+    }
+
+    public MetricDefinition getMetricDefinition() {
+        return metricDefinition;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     @Override

@@ -23,17 +23,25 @@ public class MetricDefinition {
 
     private static final List<String> REQUIRED_TAGS = Arrays.asList(UNIT, MTYPE);
 
-    public final TagCollection tags;
-    public final TagCollection meta;
+    private final TagCollection tags;
+    private final TagCollection meta;
 
     public MetricDefinition(TagCollection tags, TagCollection meta) {
         for (String tag : REQUIRED_TAGS) {
-            if (!tags.kv.containsKey(tag)) {
+            if (!tags.getKv().containsKey(tag)) {
                 throw new IllegalArgumentException("Missing required tag: " + tag);
             }
         }
         this.tags = tags;
         this.meta = meta;
+    }
+
+    public TagCollection getTags() {
+        return tags;
+    }
+
+    public TagCollection getMeta() {
+        return meta;
     }
 
     @Override

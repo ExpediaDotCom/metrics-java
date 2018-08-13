@@ -32,7 +32,7 @@ public class MetricTankIdFactory implements IdFactory {
 
     @Override
     public String getId(MetricDefinition metric) {
-        Map<String, String> tags = new HashMap<>(metric.tags.kv);
+        Map<String, String> tags = new HashMap<>(metric.getTags().getKv());
         final int orgId;
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));

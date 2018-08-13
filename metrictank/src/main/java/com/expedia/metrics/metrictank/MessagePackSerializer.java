@@ -77,13 +77,13 @@ public class MessagePackSerializer implements MetricDataSerializer {
     }
 
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
-        if (!metric.metricDefinition.meta.isEmpty()) {
+        if (!metric.getMetricDefinition().getMeta().isEmpty()) {
             throw new IOException("Metrictank does not support meta tags");
         }
-        if (!metric.metricDefinition.tags.v.isEmpty()) {
+        if (!metric.getMetricDefinition().getTags().getV().isEmpty()) {
             throw new IOException("Metrictank does not support value tags");
         }
-        Map<String, String> tags = new HashMap<>(metric.metricDefinition.tags.kv);
+        Map<String, String> tags = new HashMap<>(metric.getMetricDefinition().getTags().getKv());
         final int orgId;
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));
@@ -121,7 +121,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         packer.packString("interval");
         packer.packInt(interval);
         packer.packString("value");
-        packer.packDouble(metric.value);
+        packer.packDouble(metric.getValue());
         packer.packString("unit");
         packer.packString(unit);
         packer.packString("time");
@@ -129,7 +129,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         // packLong auto converts to narrowest int type, but Raintank requires a signed int64, so we manually pack the time
         final ByteBuffer b = ByteBuffer.allocate(1 + Long.BYTES);
         b.put(MessagePack.Code.INT64);
-        b.putLong(metric.timestamp);
+        b.putLong(metric.getTimestamp());
         packer.addPayload(b.array());
 
         packer.packString("mtype");
