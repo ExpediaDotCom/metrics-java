@@ -15,10 +15,6 @@
  */
 package com.expedia.metrics;
 
-import java.io.IOException;
-import java.util.List;
-
-public interface MetricDataSerializer {
-    public byte[] serialize(MetricData metric) throws IOException;
-    public byte[] serialize(List<MetricData> metrics) throws IOException;
+public interface IdFactory {
+    String getId(MetricDefinition metric);
 }
