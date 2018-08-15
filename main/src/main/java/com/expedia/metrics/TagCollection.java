@@ -80,4 +80,12 @@ public class TagCollection {
     public int hashCode() {
         return Objects.hash(kv, v);
     }
+
+    @Override
+    public String toString() {
+        return "TagCollection{" +
+                "kv=" + kv +
+                ", v=" + v +
+                '}';
+    }
 }

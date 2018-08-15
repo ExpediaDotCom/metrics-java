@@ -38,15 +38,25 @@ class JacksonSerializerTest extends FunSpec with Matchers {
     val metric = new MetricData(new MetricDefinition(tags, meta), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
-    val metricStr = "{\"metricDefinition\":{\"tags\":{\"kv\":{\"mtype\":\"gauge\",\"unit\":\"P\"},\"v\":[]},\"meta\":{\"kv\":{\"tag\":\"value\"},\"v\":[]}},\"value\":0.5202212202357678,\"timestamp\":1533174724}"
+    val metricStr = "{\"metricDefinition\":{\"key\":null,\"tags\":{\"kv\":{\"mtype\":\"gauge\",\"unit\":\"P\"},\"v\":[]},\"meta\":{\"kv\":{\"tag\":\"value\"},\"v\":[]}},\"value\":0.5202212202357678,\"timestamp\":1533174724}"
     val metricJson = new JSONObject(metricStr)
     val metricsStr = "[" + metricStr + "]"
     val metricsJson = new JSONArray(metricsStr)
+
+    val metricWithKey = new MetricData(new MetricDefinition("key", tags, meta), 0.5202212202357678, 1533174724L)
+    val metricWithKeyStr = "{\"metricDefinition\":{\"key\":\"key\",\"tags\":{\"kv\":{\"mtype\":\"gauge\",\"unit\":\"P\"},\"v\":[]},\"meta\":{\"kv\":{\"tag\":\"value\"},\"v\":[]}},\"value\":0.5202212202357678,\"timestamp\":1533174724}"
+    val metricWithKeyJson = new JSONObject(metricWithKeyStr)
 
     it("should serialize a MetricData") {
       val data = jacksonSerializer.serialize(metric)
       val serialised = new JSONObject(new String(data))
       assert(serialised.similar(metricJson))
+    }
+
+    it("should serialize a MetricData with a key") {
+      val data = jacksonSerializer.serialize(metricWithKey)
+      val serialised = new JSONObject(new String(data))
+      assert(serialised.similar(metricWithKeyJson))
     }
 
     it("should serialize a list of MetricData") {
@@ -58,6 +68,11 @@ class JacksonSerializerTest extends FunSpec with Matchers {
     it("should deserialize a MetricData") {
       val deserialized = jacksonSerializer.deserialize(metricStr.getBytes(StandardCharsets.UTF_8))
       deserialized should be(metric)
+    }
+
+    it("should deserialize a MetricData with a key") {
+      val deserialized = jacksonSerializer.deserialize(metricWithKeyStr.getBytes(StandardCharsets.UTF_8))
+      deserialized should be(metricWithKey)
     }
 
     it("should deserialize a list of MetricData") {

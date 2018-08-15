@@ -23,17 +23,32 @@ public class MetricDefinition {
 
     private static final List<String> REQUIRED_TAGS = Arrays.asList(UNIT, MTYPE);
 
+    private final String key;
     private final TagCollection tags;
     private final TagCollection meta;
 
     /**
-     * Constructs a MetricDefinition with the supplied tags and no meta tags
+     * Constructs a MetricDefinition with no tags or meta tags
      */
-    public MetricDefinition(TagCollection tags) {
-        this(tags, TagCollection.EMPTY);
+    public MetricDefinition(String key) {
+        this(key, TagCollection.EMPTY, TagCollection.EMPTY);
     }
 
+    /**
+     * Constructs a MetricDefinition with no meta tags or key
+     */
+    public MetricDefinition(TagCollection tags) {
+        this(null, tags, TagCollection.EMPTY);
+    }
+
+    /**
+     * Constructs a MetricDefinition with no key
+     */
     public MetricDefinition(TagCollection tags, TagCollection meta) {
+        this(null, tags, meta);
+    }
+
+    public MetricDefinition(String key, TagCollection tags, TagCollection meta) {
         if (tags == null) {
             throw new IllegalArgumentException("tags is required. Use TagCollection.EMPTY if you have no tags");
         }
@@ -45,8 +60,13 @@ public class MetricDefinition {
                 throw new IllegalArgumentException("Missing required tag: " + tag);
             }
         }
+        this.key = key;
         this.tags = tags;
         this.meta = meta;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public TagCollection getTags() {
@@ -62,11 +82,21 @@ public class MetricDefinition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MetricDefinition that = (MetricDefinition) o;
-        return Objects.equals(tags, that.tags);
+        return Objects.equals(key, that.key) &&
+                Objects.equals(tags, that.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tags);
+        return Objects.hash(key, tags);
+    }
+
+    @Override
+    public String toString() {
+        return "MetricDefinition{" +
+                "key='" + key + '\'' +
+                ", tags=" + tags +
+                ", meta=" + meta +
+                '}';
     }
 }

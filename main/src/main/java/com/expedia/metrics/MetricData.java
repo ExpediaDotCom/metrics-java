@@ -59,4 +59,13 @@ public class MetricData {
                 31 * Double.hashCode(value) ^
                 17 * Long.hashCode(timestamp);
     }
+
+    @Override
+    public String toString() {
+        return "MetricData{" +
+                "metricDefinition=" + metricDefinition +
+                ", value=" + value +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

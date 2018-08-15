@@ -147,7 +147,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
             throw new IOException("Metric should have "+METRIC_NUM_FIELDS+" fields, but has "+numFields);
         }
         unpackString("id", unpacker);
-        unpacker.unpackString();
+        String key = unpacker.unpackString();
         unpackString("org_id", unpacker);
         final int orgId = unpacker.unpackInt();
         unpackString("name", unpacker);
@@ -187,7 +187,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
 
         TagCollection tags = new TagCollection(kvTags);
-        return new MetricData(new MetricDefinition(tags, TagCollection.EMPTY), value, timestamp);
+        return new MetricData(new MetricDefinition(key, tags, TagCollection.EMPTY), value, timestamp);
     }
 
     private void unpackString(String expected, MessageUnpacker unpacker) throws IOException {
