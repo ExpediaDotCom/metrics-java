@@ -26,7 +26,20 @@ public class MetricDefinition {
     private final TagCollection tags;
     private final TagCollection meta;
 
+    /**
+     * Constructs a MetricDefinition with the supplied tags and no meta tags
+     */
+    public MetricDefinition(TagCollection tags) {
+        this(tags, TagCollection.EMPTY);
+    }
+
     public MetricDefinition(TagCollection tags, TagCollection meta) {
+        if (tags == null) {
+            throw new IllegalArgumentException("tags is required. Use TagCollection.EMPTY if you have no tags");
+        }
+        if (meta == null) {
+            throw new IllegalArgumentException("meta is required. Use TagCollection.EMPTY if you have no meta tags");
+        }
         for (String tag : REQUIRED_TAGS) {
             if (!tags.getKv().containsKey(tag)) {
                 throw new IllegalArgumentException("Missing required tag: " + tag);

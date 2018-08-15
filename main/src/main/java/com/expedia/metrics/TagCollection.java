@@ -39,6 +39,12 @@ public class TagCollection {
      * @param v Set of value tags
      */
     public TagCollection(Map<String, String> kv, Set<String> v) {
+        if (kv == null) {
+            throw new IllegalArgumentException("kv is required");
+        }
+        if (v == null) {
+            throw new IllegalArgumentException("v is required");
+        }
         this.kv = Collections.unmodifiableMap(new HashMap<>(kv));
         this.v = Collections.unmodifiableSet(new HashSet<>(v));
     }

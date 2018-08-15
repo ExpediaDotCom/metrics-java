@@ -23,6 +23,9 @@ public class MetricData {
     private final long timestamp;
 
     public MetricData(MetricDefinition metricDefinition, double value, long timestamp) {
+        if (metricDefinition == null) {
+            throw new IllegalArgumentException("metricDefinition is required");
+        }
         this.metricDefinition = metricDefinition;
         this.value = value;
         this.timestamp = timestamp;
