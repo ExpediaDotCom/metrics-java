@@ -24,7 +24,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import static com.expedia.metrics.metrictank.MessagePackSerializer.INTERVAL;
-import static com.expedia.metrics.metrictank.MessagePackSerializer.NAME;
 import static com.expedia.metrics.metrictank.MessagePackSerializer.ORG_ID;
 
 public class MetricTankIdFactory implements IdFactory {
@@ -39,9 +38,9 @@ public class MetricTankIdFactory implements IdFactory {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Org ID must be an int", e);
         }
-        final String name = tags.remove(NAME);
+        final String name = metric.getKey();
         if (name == null) {
-            throw new IllegalArgumentException("Name tag is required by metrictank");
+            throw new IllegalArgumentException("Key is required by metrictank");
         }
         final int interval;
         try {

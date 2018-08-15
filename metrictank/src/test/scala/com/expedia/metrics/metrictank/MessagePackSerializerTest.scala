@@ -31,12 +31,11 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
 
     val tags = new TagCollection(Map(
       MessagePackSerializer.ORG_ID -> "1",
-      MessagePackSerializer.NAME -> "a",
       MessagePackSerializer.INTERVAL -> "60",
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge"
     ).asJava)
-    val metric = new MetricData(new MetricDefinition(tags, TagCollection.EMPTY), 0.5202212202357678, 1533174724L)
+    val metric = new MetricData(new MetricDefinition("a", tags, TagCollection.EMPTY), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
     it("should serialize a MetricData") {

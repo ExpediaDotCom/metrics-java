@@ -30,7 +30,6 @@ import java.util.*;
 
 public class MessagePackSerializer implements MetricDataSerializer {
     public static final String ORG_ID = "org_id";
-    public static final String NAME = "name";
     public static final String INTERVAL = "interval";
 
     private static final int METRIC_NUM_FIELDS = 9;
@@ -77,6 +76,10 @@ public class MessagePackSerializer implements MetricDataSerializer {
     }
 
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
+        final String name = metric.getMetricDefinition().getKey();
+        if (name == null) {
+            throw new IOException("Key is required by metrictank");
+        }
         if (!metric.getMetricDefinition().getMeta().isEmpty()) {
             throw new IOException("Metrictank does not support meta tags");
         }
@@ -89,10 +92,6 @@ public class MessagePackSerializer implements MetricDataSerializer {
             orgId = Integer.parseInt(tags.remove(ORG_ID));
         } catch (NumberFormatException e) {
             throw new IOException("Org ID must be an int", e);
-        }
-        final String name = tags.remove(NAME);
-        if (name == null) {
-            throw new IOException("Name tag is required by metrictank");
         }
         final int interval;
         try {
@@ -172,7 +171,6 @@ public class MessagePackSerializer implements MetricDataSerializer {
         final Map<String, String> kvTags = new HashMap<>();
 
         kvTags.put(ORG_ID, Integer.toString(orgId));
-        kvTags.put(NAME, name);
         kvTags.put(INTERVAL, Integer.toString(interval));
         kvTags.put(MetricDefinition.UNIT, unit);
         kvTags.put(MetricDefinition.MTYPE, mtype);
@@ -187,7 +185,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
 
         TagCollection tags = new TagCollection(kvTags);
-        return new MetricData(new MetricDefinition(tags, TagCollection.EMPTY), value, timestamp);
+        return new MetricData(new MetricDefinition(name, tags, TagCollection.EMPTY), value, timestamp);
     }
 
     private void unpackString(String expected, MessageUnpacker unpacker) throws IOException {
