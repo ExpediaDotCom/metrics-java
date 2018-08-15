@@ -91,21 +91,21 @@ public class MessagePackSerializer implements MetricDataSerializer {
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));
         } catch (NumberFormatException e) {
-            throw new IOException("Org ID must be an int", e);
+            throw new IOException("Tag 'org_id' must be an int", e);
         }
         final int interval;
         try {
             interval = Integer.parseInt(tags.remove(INTERVAL));
         } catch (NumberFormatException e) {
-            throw new IOException("Interval must be an int", e);
+            throw new IOException("Tag 'interval' must be an int", e);
         }
         final String unit = tags.remove(MetricDefinition.UNIT);
         if (unit == null) {
-            throw new IOException("Unit tag is required by metrictank");
+            throw new IOException("Tag 'unit' is required by metrictank");
         }
         final String mtype = tags.remove(MetricDefinition.MTYPE);
         if (mtype == null) {
-            throw new IOException("Mtype tag is required by metrictank");
+            throw new IOException("Tag 'mtype' is required by metrictank");
         }
         List<String> formattedTags = idFactory.formatTags(tags);
         final String id = idFactory.getId(orgId, name, unit, mtype, interval, formattedTags);

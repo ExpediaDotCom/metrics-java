@@ -36,25 +36,25 @@ public class MetricTankIdFactory implements IdFactory {
         try {
             orgId = Integer.parseInt(tags.remove(ORG_ID));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Org ID must be an int", e);
+            throw new IllegalArgumentException("Tag 'org_id' must be an int", e);
         }
         final String name = metric.getKey();
         if (name == null) {
-            throw new IllegalArgumentException("Key is required by metrictank");
+            throw new IllegalArgumentException("Tag 'key' is required by metrictank");
         }
         final int interval;
         try {
             interval = Integer.parseInt(tags.remove(INTERVAL));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Interval must be an int", e);
+            throw new IllegalArgumentException("Tag 'interval' must be an int", e);
         }
         final String unit = tags.remove(MetricDefinition.UNIT);
         if (unit == null) {
-            throw new IllegalArgumentException("Unit tag is required by metrictank");
+            throw new IllegalArgumentException("Tag 'unit' is required by metrictank");
         }
         final String mtype = tags.remove(MetricDefinition.MTYPE);
         if (mtype == null) {
-            throw new IllegalArgumentException("Mtype tag is required by metrictank");
+            throw new IllegalArgumentException("Tag 'mtype' is required by metrictank");
         }
         List<String> formattedTags = formatTags(tags);
         return getId(orgId, name, unit, mtype, interval, formattedTags);
