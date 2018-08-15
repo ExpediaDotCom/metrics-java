@@ -36,7 +36,7 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge"
     ).asJava)
-    val metric = new MetricData(new MetricDefinition("1.d9c98f4457b6aa06a08e401b0fbc977f", tags, TagCollection.EMPTY), 0.5202212202357678, 1533174724L)
+    val metric = new MetricData(new MetricDefinition(tags, TagCollection.EMPTY), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
     it("should serialize a MetricData") {
