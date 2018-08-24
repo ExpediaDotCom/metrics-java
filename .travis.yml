@@ -4,3 +4,17 @@ cache:
   directories:
     - $HOME/.m2
 
+install:
+  - java -XX:+PrintFlagsFinal -version
+  - mvn --version
+
+script:
+  # build and deploy if master branch else just build
+  - if ([ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || [ -n "$TRAVIS_TAG" ]; then .travis/deploy.sh; else mvn clean compile scoverage:report; fi
+
+
+jdk: oraclejdk8
+
+notifications:
+  email:
+    - haystack-notifications@expedia.com
