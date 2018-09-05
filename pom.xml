@@ -1,11 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.expedia</groupId>
     <artifactId>metrics-java-root</artifactId>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>metrics-java</name>
+
+    <name>metrics-java-root</name>
 
     <scm>
         <connection>scm:git:git://ewegithub.sb.karmalab.net/EWE/metrics-java.git</connection>
@@ -36,7 +41,6 @@
         <scalatest.version>3.0.5</scalatest.version>
         <scoverage.plugin.version>1.3.0</scoverage.plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-
     </properties>
 
     <dependencyManagement>
@@ -165,7 +169,6 @@
                     </executions>
                 </plugin>
             </plugins>
-
         </pluginManagement>
 
         <plugins>
