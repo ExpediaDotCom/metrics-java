@@ -22,16 +22,23 @@ public class MetricDefinition {
     public static final String MTYPE = "mtype";
 
     private static final List<String> REQUIRED_TAGS = Arrays.asList(UNIT, MTYPE);
+    private static final TagCollection MINIMAL_TAGS;
+    static {
+        Map<String, String> kv = new HashMap<>();
+        kv.put(MTYPE, "gauge");
+        kv.put(UNIT, "metric");
+        MINIMAL_TAGS = new TagCollection(kv);
+    }
 
     private final String key;
     private final TagCollection tags;
     private final TagCollection meta;
 
     /**
-     * Constructs a MetricDefinition with no tags or meta tags
+     * Constructs a MetricDefinition with minimal tags and no meta tags
      */
     public MetricDefinition(String key) {
-        this(key, TagCollection.EMPTY, TagCollection.EMPTY);
+        this(key, MINIMAL_TAGS, TagCollection.EMPTY);
     }
 
     /**
