@@ -11,6 +11,24 @@
     <packaging>pom</packaging>
 
     <name>metrics-java-root</name>
+    <description>Metrics library based on the Metrics 2.0 specification</description>
+    <url>https://github.com/ExpediaDotCom/metrics-java</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Platform Team</name>
+            <email>eweplall@expedia.com</email>
+            <organization>Expedia Group</organization>
+            <organizationUrl>https://www.expediagroup.com</organizationUrl>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:git:git://ewegithub.sb.karmalab.net/EWE/metrics-java.git</connection>
