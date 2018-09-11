@@ -7,7 +7,7 @@
 
     <groupId>com.expedia</groupId>
     <artifactId>metrics-java-root</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0</version>
     <packaging>pom</packaging>
 
     <name>metrics-java-root</name>
@@ -49,16 +49,18 @@
         <scala.minor.version>11</scala.minor.version>
         <scala.tiny.version>12</scala.tiny.version>
         <scala.major.minor.version>${scala.major.version}.${scala.minor.version}</scala.major.minor.version>
-        <scala-library.version>${scala.major.version}.${scala.minor.version}.${scala.tiny.version}
-        </scala-library.version>
+        <scala-library.version>${scala.major.version}.${scala.minor.version}.${scala.tiny.version}</scala-library.version>
 
         <commons-codec.version>1.10</commons-codec.version>
         <jackson.version>2.9.6</jackson.version>
         <json.version>20180130</json.version>
         <msgpack-core.version>0.8.16</msgpack-core.version>
         <scalatest.version>3.0.5</scalatest.version>
+
         <scoverage.plugin.version>1.3.0</scoverage.plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <maven.javadoc.plugin.version>3.0.1</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -125,6 +127,32 @@
                             <goals>
                                 <goal>check</goal>
                                 <goal>cpd-check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven.source.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
                             </goals>
                         </execution>
                     </executions>
