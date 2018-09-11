@@ -49,8 +49,7 @@
         <scala.minor.version>11</scala.minor.version>
         <scala.tiny.version>12</scala.tiny.version>
         <scala.major.minor.version>${scala.major.version}.${scala.minor.version}</scala.major.minor.version>
-        <scala-library.version>${scala.major.version}.${scala.minor.version}.${scala.tiny.version}
-        </scala-library.version>
+        <scala-library.version>${scala.major.version}.${scala.minor.version}.${scala.tiny.version}</scala-library.version>
 
         <commons-codec.version>1.10</commons-codec.version>
         <jackson.version>2.9.6</jackson.version>
@@ -107,6 +106,11 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
                     <version>3.10.0</version>
                     <configuration>
@@ -125,6 +129,20 @@
                             <goals>
                                 <goal>check</goal>
                                 <goal>cpd-check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
                             </goals>
                         </execution>
                     </executions>
