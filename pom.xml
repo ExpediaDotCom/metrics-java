@@ -56,8 +56,11 @@
         <json.version>20180130</json.version>
         <msgpack-core.version>0.8.16</msgpack-core.version>
         <scalatest.version>3.0.5</scalatest.version>
+
         <scoverage.plugin.version>1.3.0</scoverage.plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <maven.javadoc.plugin.version>3.0.1</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -106,11 +109,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
                     <version>3.10.0</version>
                     <configuration>
@@ -135,12 +133,24 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>${maven.source.plugin.version}</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
-                            <phase>verify</phase>
                             <goals>
                                 <goal>jar-no-fork</goal>
                             </goals>
