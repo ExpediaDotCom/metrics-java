@@ -25,6 +25,10 @@
             <groupId>org.msgpack</groupId>
             <artifactId>msgpack-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
