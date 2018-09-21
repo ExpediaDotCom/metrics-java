@@ -15,8 +15,9 @@
  */
 package com.expedia.metrics.metrictank;
 
+import com.expedia.metrics.util.Encoder;
+
 import java.util.Arrays;
-import java.util.Objects;
 
 public class MetricKey {
     private final int orgId;
@@ -46,17 +47,17 @@ public class MetricKey {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(orgId);
-        result = 31 * result + Arrays.hashCode(id);
+        int result = Integer.hashCode(orgId);
+        result = result ^ Arrays.hashCode(id);
         return result;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("MetricKey{");
-        sb.append("orgId=").append(orgId);
-        sb.append(", id=").append(Arrays.toString(id));
-        sb.append('}');
+        String orgId = Integer.toString(this.orgId);
+        final StringBuilder sb = new StringBuilder(orgId.length() + 1 + id.length*2);
+        sb.append(orgId).append('.');
+        Encoder.encodeHex(sb, id);
         return sb.toString();
     }
 }

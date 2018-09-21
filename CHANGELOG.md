@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- Deserializer for [MetricPoint](https://github.com/raintank/schema/blob/master/metricpoint.go)
+- Deserializer for [MetricPoint](https://github.com/raintank/schema/blob/master/metricpoint.go) and MetricData from Kafka-mdm
 
 ## 0.2.0 2018-09-07
 ### Fixed

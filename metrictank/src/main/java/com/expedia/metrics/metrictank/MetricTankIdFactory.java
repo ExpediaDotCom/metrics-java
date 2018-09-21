@@ -17,7 +17,6 @@ package com.expedia.metrics.metrictank;
 
 import com.expedia.metrics.IdFactory;
 import com.expedia.metrics.MetricDefinition;
-import com.expedia.metrics.util.Encoder;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -35,6 +34,10 @@ public class MetricTankIdFactory implements IdFactory {
     
     @Override
     public String getId(MetricDefinition metric) {
+        return getKey(metric).toString();
+    }
+
+    public MetricKey getKey(MetricDefinition metric) {
         Map<String, String> tags = new HashMap<>(metric.getTags().getKv());
         final int orgId;
         try {
@@ -61,10 +64,14 @@ public class MetricTankIdFactory implements IdFactory {
             throw new IllegalArgumentException("Tag 'mtype' is required by metrictank");
         }
         List<String> formattedTags = formatTags(tags);
-        return getId(orgId, name, unit, mtype, interval, formattedTags);
+        return getKey(orgId, name, unit, mtype, interval, formattedTags);
     }
 
     public String getId(int orgId, String name, String unit, String mtype, int interval, List<String> tags) {
+        return getKey(orgId, name, unit, mtype, interval, tags).toString();
+    }
+
+    public MetricKey getKey(int orgId, String name, String unit, String mtype, int interval, List<String> tags) {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
@@ -82,13 +89,7 @@ public class MetricTankIdFactory implements IdFactory {
             md.update((byte)0);
             md.update(tag.getBytes(StandardCharsets.UTF_8));
         }
-        String orgIdStr = Integer.toString(orgId);
-        byte[] md5sum = md.digest();
-        final StringBuilder builder = new StringBuilder(orgIdStr.length() + 1 + md5sum.length*2)
-                .append(orgId)
-                .append('.');
-        Encoder.encodeHex(builder, md5sum);
-        return builder.toString();
+        return new MetricKey(orgId, md.digest());
     }
 
     public List<String> formatTags(Map<String, String> tags) {

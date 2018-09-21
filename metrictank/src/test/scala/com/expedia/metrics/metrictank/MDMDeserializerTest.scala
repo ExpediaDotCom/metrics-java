@@ -17,12 +17,13 @@
 package com.expedia.metrics.metrictank
 
 import java.io.IOException
+import java.nio.ByteBuffer
 import java.util.Base64
 
 import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 
-class MetricPointDeserializerTest extends FunSpec with Matchers with GivenWhenThen {
-  describe("MetricPointKafkaDeserializer") {
+class MDMDeserializerTest extends FunSpec with Matchers with GivenWhenThen {
+  describe("MDMDeserializer") {
 
     it("should deserialize a byte array to Metric Point") {
       val mpExpected = new MetricPoint(new MetricKey(1,
@@ -31,35 +32,34 @@ class MetricPointDeserializerTest extends FunSpec with Matchers with GivenWhenTh
         0f, 1536278417l)
       Given("byte array representing a Metric Point")
       var bytes = Base64.getDecoder.decode("AmJEqaiQ8IzCHmeWl9rOPKoAAAAAAAAAAJG/kVsBAAAA")
-      val des = new MetricPointDeserializer
+      val des = new MDMDeserializer
       When("deserializing")
-      val mp = des.deserialize(bytes)
+      val mp = des.deserialize(ByteBuffer.wrap(bytes))
       Then("deserialized value equals metric point")
-      assert(mp == mpExpected)
+      mp.isMetricPoint should be(true)
+      mp.getMetricPoint should be (mpExpected)
     }
 
     it("should fail deserialization when byte array size doesn't equal to 33") {
       Given("bytes array of size 32")
       val bytes = Base64.getDecoder.decode("AmJEqaiQ8IzCHmeWl9rOPKoAAAAAAAAAAJG/kVsBAA")
-      val des = new MetricPointDeserializer
+      val des = new MDMDeserializer
       When("deserializing")
       val thrown = intercept[IOException] {
-        des.deserialize(bytes)
+        des.deserialize(ByteBuffer.wrap(bytes))
       }
-      Then("IOException is thrown with relevant message")
-      assert(thrown.getMessage == "Not a MetricPoint format")
+      Then("IOException is thrown")
     }
 
     it("should fail deserialization when byte array represents an unknown format") {
       Given("bytes array representing unknown Metric Point format")
       val bytes = Base64.getDecoder.decode("BGJEqaiQ8IzCHmeWl9rOPKoAAAAAAAAAAJG/kVsBAAAA")
-      val des = new MetricPointDeserializer
+      val des = new MDMDeserializer
       When("deserializing")
       val thrown = intercept[IOException] {
-        des.deserialize(bytes)
+        des.deserialize(ByteBuffer.wrap(bytes))
       }
-      Then("IOException is thrown with relevant message")
-      assert(thrown.getMessage == "Not a MetricPoint format")
+      Then("IOException is thrown")
     }
   }
 }
