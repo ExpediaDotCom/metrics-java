@@ -47,7 +47,7 @@ public class MetricTankIdFactory implements IdFactory {
         }
         final String name = metric.getKey();
         if (name == null) {
-            throw new IllegalArgumentException("Tag 'key' is required by metrictank");
+            throw new IllegalArgumentException("Property 'key' is required by metrictank");
         }
         final int interval;
         try {
