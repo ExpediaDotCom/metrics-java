@@ -30,6 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @deprecated Use {@link MetricsJavaModule} instead.
+ */
+@Deprecated
 public class JacksonSerializer implements MetricDataSerializer {
     private final ObjectMapper mapper;
 
