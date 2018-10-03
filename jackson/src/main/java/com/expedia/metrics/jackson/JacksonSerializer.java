@@ -17,31 +17,22 @@ package com.expedia.metrics.jackson;
 
 import com.expedia.metrics.MetricData;
 import com.expedia.metrics.MetricDataSerializer;
-import com.expedia.metrics.MetricDefinition;
-import com.expedia.metrics.TagCollection;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-/**
- * @deprecated Use {@link MetricsJavaModule} instead.
- */
-@Deprecated
 public class JacksonSerializer implements MetricDataSerializer {
     private final ObjectMapper mapper;
 
     public JacksonSerializer() {
-        mapper = new ObjectMapper();
-        mapper.addMixIn(MetricData.class, MetricDataMixin.class);
-        mapper.addMixIn(MetricDefinition.class, MetricDefinitionMixin.class);
-        mapper.addMixIn(TagCollection.class, TagCollectionMixin.class);
+        this(new ObjectMapper());
+    }
+
+    public JacksonSerializer(ObjectMapper mapper) {
+        this.mapper = mapper;
+        mapper.registerModule(new MetricsJavaModule());
     }
 
     @Override
@@ -62,33 +53,5 @@ public class JacksonSerializer implements MetricDataSerializer {
     @Override
     public List<MetricData> deserializeList(byte[] bytes) throws IOException {
         return mapper.readValue(bytes, new TypeReference<List<MetricData>>() {});
-    }
-
-    private static class MetricDataMixin {
-        @SuppressWarnings("PMD.UnusedFormalParameter")
-        @JsonCreator
-        MetricDataMixin(
-                @JsonProperty("metricDefinition") MetricDefinition metricDefinition,
-                @JsonProperty("value") double value,
-                @JsonProperty("timestamp") long timestamp) {}
-    }
-
-    private static class MetricDefinitionMixin {
-        @SuppressWarnings("PMD.UnusedFormalParameter")
-        @JsonCreator
-        MetricDefinitionMixin(
-                @JsonProperty("tags") TagCollection tags,
-                @JsonProperty("meta") TagCollection meta) {}
-    }
-
-    private static class TagCollectionMixin {
-        @SuppressWarnings("PMD.UnusedFormalParameter")
-        @JsonCreator
-        TagCollectionMixin(
-                @JsonProperty("kv") Map<String, String> kv,
-                @JsonProperty("v") Set<String> v) {}
-
-        @JsonIgnore
-        boolean isEmpty() {return true;}
     }
 }

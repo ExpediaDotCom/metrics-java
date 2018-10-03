@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 0.5.0 2018-10-03
+### Added
+- Jackson MetricsJavaModule to allow existing ObjectMappers to serialize MetricData
+
 ## 0.4.0 2018-09-21
 ### Added
 - Deserializer for [MetricPoint](https://github.com/raintank/schema/blob/master/metricpoint.go) and MetricData from Kafka-mdm
