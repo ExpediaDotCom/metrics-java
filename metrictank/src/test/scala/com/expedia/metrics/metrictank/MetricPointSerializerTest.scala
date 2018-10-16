@@ -17,7 +17,6 @@ package com.expedia.metrics.metrictank
 
 import java.util.Base64
 
-import com.expedia.metrics.util.Encoder
 import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 
 class MetricPointSerializerTest extends FunSpec with Matchers with GivenWhenThen {
