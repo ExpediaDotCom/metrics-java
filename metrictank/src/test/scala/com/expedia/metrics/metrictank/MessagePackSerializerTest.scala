@@ -26,8 +26,8 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
 
   describe("MessagePackSerializer") {
     val messagePackSerializer = new MessagePackSerializer()
-    val serializedMetric = Base64.getDecoder.decode("iaJpZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqZvcmdfaWQBpG5hbWWhYahpbnRlcnZhbDyldmFsdWXLP+ClpvjzIXmkdW5pdKFQpHRpbWXTAAAAAFtiY8SlbXR5cGWlZ2F1Z2WkdGFnc5A=")
-    val serializedMetricList = Base64.getDecoder.decode("kYmiaWTZIjEuZDljOThmNDQ1N2I2YWEwNmEwOGU0MDFiMGZiYzk3N2amb3JnX2lkAaRuYW1loWGoaW50ZXJ2YWw8pXZhbHVlyz/gpab48yF5pHVuaXShUKR0aW1l0wAAAABbYmPEpW10eXBlpWdhdWdlpHRhZ3OQ")
+    val serializedMetric = Base64.getDecoder.decode("iaJJZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1Zcs/4KWm+PMheaRVbml0oVCkVGltZdMAAAAAW2JjxKVNdHlwZaVnYXVnZaRUYWdzkA==")
+    val serializedMetricList = Base64.getDecoder.decode("kYmiSWTZIjEuZDljOThmNDQ1N2I2YWEwNmEwOGU0MDFiMGZiYzk3N2alT3JnSWQBpE5hbWWhYahJbnRlcnZhbDylVmFsdWXLP+ClpvjzIXmkVW5pdKFQpFRpbWXTAAAAAFtiY8SlTXR5cGWlZ2F1Z2WkVGFnc5A=")
 
     val tags = new TagCollection(Map(
       MessagePackSerializer.ORG_ID -> "1",

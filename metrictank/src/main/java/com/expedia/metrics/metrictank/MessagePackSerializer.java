@@ -19,15 +19,17 @@ import com.expedia.metrics.MetricData;
 import com.expedia.metrics.MetricDataSerializer;
 import com.expedia.metrics.MetricDefinition;
 import com.expedia.metrics.TagCollection;
-import org.msgpack.core.MessageBufferPacker;
-import org.msgpack.core.MessagePack;
-import org.msgpack.core.MessagePacker;
-import org.msgpack.core.MessageUnpacker;
+import org.msgpack.core.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+/**
+ * This serializer reads and writes the Metrictank Kafka-mdm MetricData format
+ *
+ * @see <a href="https://github.com/grafana/metrictank/blob/master/docs/inputs.md#metricdata">MetricData</a>
+ */
 public class MessagePackSerializer implements MetricDataSerializer {
     public static final String ORG_ID = "org_id";
     public static final String INTERVAL = "interval";
@@ -55,17 +57,25 @@ public class MessagePackSerializer implements MetricDataSerializer {
         return packer.toByteArray();
     }
 
-    @Override
-    public MetricData deserialize(byte[] bytes) throws IOException {
-        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
-        MetricData metricData = deserialize(unpacker);
-        unpacker.close();
-        return metricData;
+    public MetricData deserialize(ByteBuffer buffer) throws IOException {
+        try {
+            final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer);
+            MetricData metricData = deserialize(unpacker);
+            unpacker.close();
+            return metricData;
+        } catch (MessagePackException e) {
+            throw new IOException("Unable to deserialize MetricData", e);
+        }
     }
 
     @Override
-    public List<MetricData> deserializeList(byte[] bytes) throws IOException {
-        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
+    public MetricData deserialize(byte[] bytes) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return deserialize(buffer);
+    }
+
+    public List<MetricData> deserializeList(ByteBuffer buffer) throws IOException {
+        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer);
         final int numMetrics = unpacker.unpackArrayHeader();
         List<MetricData> metrics = new ArrayList<>(numMetrics);
         for (int i=0; i < numMetrics; i++) {
@@ -73,6 +83,12 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
         unpacker.close();
         return metrics;
+    }
+
+    @Override
+    public List<MetricData> deserializeList(byte[] bytes) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return deserializeList(buffer);
     }
 
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
@@ -111,19 +127,19 @@ public class MessagePackSerializer implements MetricDataSerializer {
         final String id = idFactory.getId(orgId, name, unit, mtype, interval, formattedTags);
 
         packer.packMapHeader(METRIC_NUM_FIELDS);
-        packer.packString("id");
+        packer.packString("Id");
         packer.packString(id);
-        packer.packString("org_id");
+        packer.packString("OrgId");
         packer.packInt(orgId);
-        packer.packString("name");
+        packer.packString("Name");
         packer.packString(name);
-        packer.packString("interval");
+        packer.packString("Interval");
         packer.packInt(interval);
-        packer.packString("value");
+        packer.packString("Value");
         packer.packDouble(metric.getValue());
-        packer.packString("unit");
+        packer.packString("Unit");
         packer.packString(unit);
-        packer.packString("time");
+        packer.packString("Time");
 
         // packLong auto converts to narrowest int type, but Raintank requires a signed int64, so we manually pack the time
         final ByteBuffer b = ByteBuffer.allocate(1 + Long.BYTES);
@@ -131,9 +147,9 @@ public class MessagePackSerializer implements MetricDataSerializer {
         b.putLong(metric.getTimestamp());
         packer.addPayload(b.array());
 
-        packer.packString("mtype");
+        packer.packString("Mtype");
         packer.packString(mtype);
-        packer.packString("tags");
+        packer.packString("Tags");
         packer.packArrayHeader(formattedTags.size());
         for (final String tag : formattedTags) {
             packer.packString(tag);
@@ -141,37 +157,68 @@ public class MessagePackSerializer implements MetricDataSerializer {
     }
 
     private MetricData deserialize(MessageUnpacker unpacker) throws IOException {
-        int numFields = unpacker.unpackMapHeader();
-        if (numFields != METRIC_NUM_FIELDS) {
-            throw new IOException("Metric should have "+METRIC_NUM_FIELDS+" fields, but has "+numFields);
+        Integer orgId = null;
+        String name = null;
+        Integer interval = null;
+        Double value = null;
+        String unit = null;
+        Long timestamp = null;
+        String mtype = null;
+        List<String> rawTags = null;
+        for (int numFields = unpacker.unpackMapHeader(); numFields > 0; numFields--) {
+            String fieldName = unpacker.unpackString();
+            switch(fieldName) {
+                case "Id":
+                    unpacker.unpackString();
+                    break;
+                case "OrgId":
+                    orgId = unpacker.unpackInt();
+                    break;
+                case "Name":
+                name = unpacker.unpackString();
+                    break;
+                case "Interval":
+                interval = unpacker.unpackInt();
+                    break;
+                case "Value":
+                value = unpacker.unpackDouble();
+                    break;
+                case "Unit":
+                unit = unpacker.unpackString();
+                    break;
+                case "Time":
+                timestamp = unpacker.unpackLong();
+                    break;
+                case "Mtype":
+                mtype = unpacker.unpackString();
+                    break;
+                case "Tags":
+                    final int numTags = unpacker.unpackArrayHeader();
+                    rawTags = new ArrayList<>(numTags);
+                    for (int i = 0; i < numTags; i++) {
+                        rawTags.add(unpacker.unpackString());
+                    }
+                    break;
+                default:
+                    // Discard unknown values
+                    unpacker.unpackValue();
+                    break;
+            }
         }
-        unpackString("id", unpacker);
-        unpacker.unpackString();
-        unpackString("org_id", unpacker);
-        final int orgId = unpacker.unpackInt();
-        unpackString("name", unpacker);
-        final String name = unpacker.unpackString();
-        unpackString("interval", unpacker);
-        final int interval = unpacker.unpackInt();
-        unpackString("value", unpacker);
-        final double value = unpacker.unpackDouble();
-        unpackString("unit", unpacker);
-        final String unit = unpacker.unpackString();
-        unpackString("time", unpacker);
-        final long timestamp = unpacker.unpackLong();
-        unpackString("mtype", unpacker);
-        final String mtype = unpacker.unpackString();
-        unpackString("tags", unpacker);
-        final int numTags = unpacker.unpackArrayHeader();
-        List<String> rawTags = new ArrayList<>(numTags);
-        for (int i=0; i < numTags; i++) {
-            rawTags.add(unpacker.unpackString());
-        }
+
+        checkRequiredField("OrgId", orgId);
+        checkRequiredField("Name", name);
+        checkRequiredField("Interval", interval);
+        checkRequiredField("Value", value);
+        checkRequiredField("Unit", unit);
+        checkRequiredField("Timestamp", timestamp);
+        checkRequiredField("Mtype", mtype);
+        checkRequiredField("Tags", rawTags);
 
         final Map<String, String> kvTags = new HashMap<>();
 
-        kvTags.put(ORG_ID, Integer.toString(orgId));
-        kvTags.put(INTERVAL, Integer.toString(interval));
+        kvTags.put(ORG_ID, orgId.toString());
+        kvTags.put(INTERVAL, interval.toString());
         kvTags.put(MetricDefinition.UNIT, unit);
         kvTags.put(MetricDefinition.MTYPE, mtype);
         for (final String tag : rawTags) {
@@ -188,10 +235,9 @@ public class MessagePackSerializer implements MetricDataSerializer {
         return new MetricData(new MetricDefinition(name, tags, TagCollection.EMPTY), value, timestamp);
     }
 
-    private void unpackString(String expected, MessageUnpacker unpacker) throws IOException {
-        final String actual = unpacker.unpackString();
-        if (!actual.equals(expected)) {
-            throw new IOException("Expected field "+expected+" but got "+actual);
+    private void checkRequiredField(String fieldName, Object value) throws IOException {
+        if (value == null) {
+            throw new IOException("Missing required field: "+fieldName);
         }
     }
 }
