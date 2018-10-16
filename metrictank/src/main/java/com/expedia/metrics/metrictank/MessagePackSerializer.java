@@ -19,10 +19,7 @@ import com.expedia.metrics.MetricData;
 import com.expedia.metrics.MetricDataSerializer;
 import com.expedia.metrics.MetricDefinition;
 import com.expedia.metrics.TagCollection;
-import org.msgpack.core.MessageBufferPacker;
-import org.msgpack.core.MessagePack;
-import org.msgpack.core.MessagePacker;
-import org.msgpack.core.MessageUnpacker;
+import org.msgpack.core.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -60,17 +57,25 @@ public class MessagePackSerializer implements MetricDataSerializer {
         return packer.toByteArray();
     }
 
-    @Override
-    public MetricData deserialize(byte[] bytes) throws IOException {
-        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
-        MetricData metricData = deserialize(unpacker);
-        unpacker.close();
-        return metricData;
+    public MetricData deserialize(ByteBuffer buffer) throws IOException {
+        try {
+            final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer);
+            MetricData metricData = deserialize(unpacker);
+            unpacker.close();
+            return metricData;
+        } catch (MessagePackException e) {
+            throw new IOException("Unable to deserialize MetricData", e);
+        }
     }
 
     @Override
-    public List<MetricData> deserializeList(byte[] bytes) throws IOException {
-        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
+    public MetricData deserialize(byte[] bytes) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return deserialize(buffer);
+    }
+
+    public List<MetricData> deserializeList(ByteBuffer buffer) throws IOException {
+        final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer);
         final int numMetrics = unpacker.unpackArrayHeader();
         List<MetricData> metrics = new ArrayList<>(numMetrics);
         for (int i=0; i < numMetrics; i++) {
@@ -78,6 +83,12 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
         unpacker.close();
         return metrics;
+    }
+
+    @Override
+    public List<MetricData> deserializeList(byte[] bytes) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return deserializeList(buffer);
     }
 
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
