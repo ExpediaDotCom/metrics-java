@@ -31,7 +31,7 @@ else
     echo "no travis tag is set, hence keeping the snapshot version in pom.xml"
 fi
 
-mvn clean deploy --settings .travis/settings.xml -B -U
+mvn clean deploy --settings .travis/settings.xml -B -U -P release
 SUCCESS=$?
 
 if [ ${SUCCESS} -eq 0 ]
