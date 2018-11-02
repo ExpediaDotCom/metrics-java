@@ -6,15 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## 0.6.1 2018-10-18
+## 0.6.0 2018-11-02
 ### Added
 - MetricPointSerializer for reading and writing the Metrictank Kafka-mdm MetricPoint format
 
 ### Changed
 - MessagePackSerializer now reads the Metrictank Kafka-mdm MetricData format, the previous implementation was not compatible with Metrictank
-
-## 0.6.0 2018-10-17
-This number skipped due to issues with the release process
 
 ## 0.5.0 2018-10-03
 ### Added
