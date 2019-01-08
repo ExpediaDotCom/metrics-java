@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 0.6.1 2019-01-08
 ### Changed
-- MessagePackSerializer will now add an empty unit if the unit tag is missing. This is to match the behaviour of the MetricTank go code.
+- MessagePackSerializer deserialisation validation is now closer to the MetricTank go implementation behaviour. As a consqeuence if the unit, value, timestamp, or tags are missing a default empty or zero value will be supplied.
 
 ## 0.6.0 2018-11-02
 ### Added
