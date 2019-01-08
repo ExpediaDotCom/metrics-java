@@ -157,14 +157,14 @@ public class MessagePackSerializer implements MetricDataSerializer {
     }
 
     private MetricData deserialize(MessageUnpacker unpacker) throws IOException {
-        Integer orgId = null;
-        String name = null;
-        Integer interval = null;
-        Double value = null;
-        String unit = null;
-        Long timestamp = null;
-        String mtype = null;
-        List<String> rawTags = null;
+        int orgId = 0;
+        String name = "";
+        int interval = 0;
+        double value = 0.0;
+        String unit = "";
+        long timestamp = 0L;
+        String mtype = "";
+        List<String> rawTags = Collections.emptyList();
         for (int numFields = unpacker.unpackMapHeader(); numFields > 0; numFields--) {
             String fieldName = unpacker.unpackString();
             switch(fieldName) {
@@ -206,19 +206,15 @@ public class MessagePackSerializer implements MetricDataSerializer {
             }
         }
 
-        checkRequiredField("OrgId", orgId);
-        checkRequiredField("Name", name);
-        checkRequiredField("Interval", interval);
-        checkRequiredField("Value", value);
-        checkRequiredField("Unit", unit);
-        checkRequiredField("Timestamp", timestamp);
-        checkRequiredField("Mtype", mtype);
-        checkRequiredField("Tags", rawTags);
+        throwIfMissing("OrgId", orgId == 0);
+        throwIfMissing("Name", name.isEmpty());
+        throwIfMissing("Interval", interval == 0);
+        throwIfMissing("Mtype", mtype.isEmpty());
 
         final Map<String, String> kvTags = new HashMap<>();
 
-        kvTags.put(ORG_ID, orgId.toString());
-        kvTags.put(INTERVAL, interval.toString());
+        kvTags.put(ORG_ID, Integer.toString(orgId));
+        kvTags.put(INTERVAL, Integer.toString(interval));
         kvTags.put(MetricDefinition.UNIT, unit);
         kvTags.put(MetricDefinition.MTYPE, mtype);
         for (final String tag : rawTags) {
@@ -235,8 +231,8 @@ public class MessagePackSerializer implements MetricDataSerializer {
         return new MetricData(new MetricDefinition(name, tags, TagCollection.EMPTY), value, timestamp);
     }
 
-    private void checkRequiredField(String fieldName, Object value) throws IOException {
-        if (value == null) {
+    private void throwIfMissing(String fieldName, boolean isMissing) throws IOException {
+        if (isMissing) {
             throw new IOException("Missing required field: "+fieldName);
         }
     }
