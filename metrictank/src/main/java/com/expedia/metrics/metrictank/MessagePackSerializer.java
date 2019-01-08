@@ -161,7 +161,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         String name = null;
         Integer interval = null;
         Double value = null;
-        String unit = null;
+        String unit = "";
         Long timestamp = null;
         String mtype = null;
         List<String> rawTags = null;

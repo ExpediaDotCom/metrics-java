@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.6.1 2019-01-08
+### Changed
+- MessagePackSerializer will now add an empty unit if the unit tag is missing. This is to match the behaviour of the MetricTank go code.
+
 ## 0.6.0 2018-11-02
 ### Added
 - MetricPointSerializer for reading and writing the Metrictank Kafka-mdm MetricPoint format

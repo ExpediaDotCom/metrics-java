@@ -56,7 +56,6 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
 
       Then("the result should be predictable")
       b should be(serializedMetricList)
-
     }
 
     it("should deserialize a MetricData") {
@@ -77,7 +76,24 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
 
       Then("the result should be predictable")
       l should be(metrics)
+    }
 
+    it("should default to an empty unit when deserialising") {
+      Given("A MetricData with no unit")
+      val serializedMetricNoUnit = Base64.getDecoder.decode("iaJJZNkiMS5mNmJlZTcyZTU1OWI0ZDM4YmMwMWJhZmU5NWE3YjFlZaVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1ZctAyAAAAAAAAKRVbml0oKRUaW1l0wAAAABcNBY9pU10eXBlpWdhdWdlpFRhZ3OQ")
+      val tagsEmptyUnit = new TagCollection(Map(
+        MessagePackSerializer.ORG_ID -> "1",
+        MessagePackSerializer.INTERVAL -> "60",
+        MetricDefinition.UNIT -> "",
+        MetricDefinition.MTYPE -> "gauge"
+      ).asJava)
+      val metricNoUnit = new MetricData(new MetricDefinition("a", tagsEmptyUnit, TagCollection.EMPTY), 12288, 1546917437L)
+
+      When("deserializing")
+      val m = messagePackSerializer.deserialize(serializedMetricNoUnit)
+
+      Then("the result should have a unit that is the empty string")
+      m should be(metricNoUnit)
     }
 
   }
