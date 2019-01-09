@@ -6,9 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## 0.6.1 2019-01-08
+## 0.6.2 2019-01-08
 ### Changed
 - MessagePackSerializer deserialisation validation is now closer to the MetricTank go implementation behaviour. As a consqeuence if the unit, value, timestamp, or tags are missing a default empty or zero value will be supplied.
+
+## 0.6.1 2018-10-18
+This version number was partially released and should not be used
 
 ## 0.6.0 2018-11-02
 ### Added
