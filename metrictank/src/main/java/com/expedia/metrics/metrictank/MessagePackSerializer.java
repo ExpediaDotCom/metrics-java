@@ -96,25 +96,23 @@ public class MessagePackSerializer implements MetricDataSerializer {
         if (name == null) {
             throw new IOException("Key is required by metrictank");
         }
-        if (!metric.getMetricDefinition().getMeta().isEmpty()) {
-            throw new IOException("Metrictank does not support meta tags");
-        }
         if (!metric.getMetricDefinition().getTags().getV().isEmpty()) {
             throw new IOException("Metrictank does not support value tags");
         }
-        Map<String, String> tags = new HashMap<>(metric.getMetricDefinition().getTags().getKv());
+        Map<String, String> metaTags = metric.getMetricDefinition().getMeta().getKv();
         final int orgId;
         try {
-            orgId = Integer.parseInt(tags.remove(ORG_ID));
+            orgId = Integer.parseInt(metaTags.get(ORG_ID));
         } catch (NumberFormatException e) {
             throw new IOException("Tag 'org_id' must be an int", e);
         }
         final int interval;
         try {
-            interval = Integer.parseInt(tags.remove(INTERVAL));
+            interval = Integer.parseInt(metaTags.get(INTERVAL));
         } catch (NumberFormatException e) {
             throw new IOException("Tag 'interval' must be an int", e);
         }
+        Map<String, String> tags = new HashMap<>(metric.getMetricDefinition().getTags().getKv());
         final String unit = tags.remove(MetricDefinition.UNIT);
         if (unit == null) {
             throw new IOException("Tag 'unit' is required by metrictank");
@@ -211,10 +209,10 @@ public class MessagePackSerializer implements MetricDataSerializer {
         throwIfMissing("Interval", interval == 0);
         throwIfMissing("Mtype", mtype.isEmpty());
 
+        final Map<String, String> metaKvTags = new HashMap<>();
+        metaKvTags.put(ORG_ID, Integer.toString(orgId));
+        metaKvTags.put(INTERVAL, Integer.toString(interval));
         final Map<String, String> kvTags = new HashMap<>();
-
-        kvTags.put(ORG_ID, Integer.toString(orgId));
-        kvTags.put(INTERVAL, Integer.toString(interval));
         kvTags.put(MetricDefinition.UNIT, unit);
         kvTags.put(MetricDefinition.MTYPE, mtype);
         for (final String tag : rawTags) {
@@ -228,7 +226,8 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
 
         TagCollection tags = new TagCollection(kvTags);
-        return new MetricData(new MetricDefinition(name, tags, TagCollection.EMPTY), value, timestamp);
+        TagCollection meta = new TagCollection(metaKvTags);
+        return new MetricData(new MetricDefinition(name, tags, meta), value, timestamp);
     }
 
     private void throwIfMissing(String fieldName, boolean isMissing) throws IOException {
