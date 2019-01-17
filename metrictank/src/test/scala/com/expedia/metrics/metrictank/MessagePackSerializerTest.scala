@@ -15,7 +15,7 @@
  */
 package com.expedia.metrics.metrictank
 
-import java.util.{Base64, Collections}
+import java.util.Base64
 
 import com.expedia.metrics.{MetricData, MetricDefinition, TagCollection}
 import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
@@ -30,12 +30,14 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
     val serializedMetricList = Base64.getDecoder.decode("kYmiSWTZIjEuZDljOThmNDQ1N2I2YWEwNmEwOGU0MDFiMGZiYzk3N2alT3JnSWQBpE5hbWWhYahJbnRlcnZhbDylVmFsdWXLP+ClpvjzIXmkVW5pdKFQpFRpbWXTAAAAAFtiY8SlTXR5cGWlZ2F1Z2WkVGFnc5A=")
 
     val tags = new TagCollection(Map(
-      MessagePackSerializer.ORG_ID -> "1",
-      MessagePackSerializer.INTERVAL -> "60",
       MetricDefinition.UNIT -> "P",
       MetricDefinition.MTYPE -> "gauge"
     ).asJava)
-    val metric = new MetricData(new MetricDefinition("a", tags, TagCollection.EMPTY), 0.5202212202357678, 1533174724L)
+    val metaTags = new TagCollection(Map(
+      MessagePackSerializer.ORG_ID -> "1",
+      MessagePackSerializer.INTERVAL -> "60"
+    ).asJava)
+    val metric = new MetricData(new MetricDefinition("a", tags, metaTags), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
     it("should serialize a MetricData") {
@@ -82,18 +84,44 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
       Given("A MetricData with no unit")
       val serializedMetricNoUnit = Base64.getDecoder.decode("iaJJZNkiMS5mNmJlZTcyZTU1OWI0ZDM4YmMwMWJhZmU5NWE3YjFlZaVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1ZctAyAAAAAAAAKRVbml0oKRUaW1l0wAAAABcNBY9pU10eXBlpWdhdWdlpFRhZ3OQ")
       val tagsEmptyUnit = new TagCollection(Map(
-        MessagePackSerializer.ORG_ID -> "1",
-        MessagePackSerializer.INTERVAL -> "60",
         MetricDefinition.UNIT -> "",
         MetricDefinition.MTYPE -> "gauge"
       ).asJava)
-      val metricNoUnit = new MetricData(new MetricDefinition("a", tagsEmptyUnit, TagCollection.EMPTY), 12288, 1546917437L)
+      val metricNoUnit = new MetricData(new MetricDefinition("a", tagsEmptyUnit, metaTags), 12288, 1546917437L)
 
       When("deserializing")
       val m = messagePackSerializer.deserialize(serializedMetricNoUnit)
 
       Then("the result should have a unit that is the empty string")
       m should be(metricNoUnit)
+    }
+
+    it("should preserve a tag named 'interval'") {
+      Given("A MetricData with a tag named 'interval'")
+      val serializedMetricWithInterval = Base64.getDecoder.decode("iaJJZNkiMS40Nzc1ODllNjhkNWIwMWI3Y2NhOGRkMDVmMmQwODY1M6VPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1ZctAyAAAAAAAAKRVbml0oKRUaW1l0wAAAABcNBY9pU10eXBlpWdhdWdlpFRhZ3ORsmludGVydmFsPU9uZU1pbnV0ZQ==")
+      val tagsWithInterval = new TagCollection(Map(
+        "interval" -> "OneMinute",
+        MetricDefinition.UNIT -> "",
+        MetricDefinition.MTYPE -> "gauge"
+      ).asJava)
+      val metricWithInterval = new MetricData(new MetricDefinition("a", tagsWithInterval, metaTags), 12288, 1546917437L)
+
+      When("deserializing")
+      val m = messagePackSerializer.deserialize(serializedMetricWithInterval)
+
+      Then("the result should have an interval")
+      m should be(metricWithInterval)
+    }
+
+    it("should ignore a tag named 'unit'") {
+      Given("A MetricData with a tag named 'unit'")
+      val serializedMetricWithUnitTag = Base64.getDecoder.decode("iaJJZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1Zcs/4KWm+PMheaRVbml0oVCkVGltZc5bYmPEpU10eXBlpWdhdWdlpFRhZ3ORsXVuaXQ9bWljcm9zZWNvbmRz")
+
+      When("deserializing")
+      val m = messagePackSerializer.deserialize(serializedMetricWithUnitTag)
+
+      Then("the result should have the unit field, not the unit tag")
+      m should be(metric)
     }
 
   }
