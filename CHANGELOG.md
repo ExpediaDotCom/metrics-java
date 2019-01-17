@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.7.0 2019-01-17
 ### Changed
 - Metrictank interval and org_id are now stored as metatags instead of tags. This makes it possible to use tags with those names, however metrics serialised with earlier versions of metrics-java will not be compatible with this release.
 - Metrictank metrics containing tags named unit or mtype will have that tag discarded during deserialization to avoid colliding with the unit and mtype fields
