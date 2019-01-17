@@ -221,6 +221,9 @@ public class MessagePackSerializer implements MetricDataSerializer {
                 throw new IOException("Read a tag with no '=': "+tag);
             }
             final String tagKey = tag.substring(0, pos);
+            if (tagKey.equals(MetricDefinition.UNIT) || tagKey.equals(MetricDefinition.MTYPE)) {
+                continue;
+            }
             final String tagValue = tag.substring(pos+1);
             kvTags.put(tagKey, tagValue);
         }

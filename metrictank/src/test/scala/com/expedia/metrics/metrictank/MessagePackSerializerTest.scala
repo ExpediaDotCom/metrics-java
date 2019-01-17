@@ -113,5 +113,16 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
       m should be(metricWithInterval)
     }
 
+    it("should ignore a tag named 'unit'") {
+      Given("A MetricData with a tag named 'unit'")
+      val serializedMetricWithUnitTag = Base64.getDecoder.decode("iaJJZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1Zcs/4KWm+PMheaRVbml0oVCkVGltZc5bYmPEpU10eXBlpWdhdWdlpFRhZ3ORsXVuaXQ9bWljcm9zZWNvbmRz")
+
+      When("deserializing")
+      val m = messagePackSerializer.deserialize(serializedMetricWithUnitTag)
+
+      Then("the result should have the unit field, not the unit tag")
+      m should be(metric)
+    }
+
   }
 }
