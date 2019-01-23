@@ -36,28 +36,25 @@ public class MetricTankIdFactory implements IdFactory {
     public String getId(MetricDefinition metric) {
         return getKey(metric).toString();
     }
-
+    
     public MetricKey getKey(MetricDefinition metric) {
+        Map<String, String> tags = new HashMap<>(metric.getTags().getKv());
+        final int orgId;
+        try {
+            orgId = Integer.parseInt(tags.remove(ORG_ID));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Tag 'org_id' must be an int", e);
+        }
         final String name = metric.getKey();
         if (name == null) {
             throw new IllegalArgumentException("Property 'key' is required by metrictank");
         }
-
-        Map<String, String> metaTags = metric.getMeta().getKv();
-        final int orgId;
-        try {
-            orgId = Integer.parseInt(metaTags.get(ORG_ID));
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Tag 'org_id' must be an int", e);
-        }
         final int interval;
         try {
-            interval = Integer.parseInt(metaTags.get(INTERVAL));
+            interval = Integer.parseInt(tags.remove(INTERVAL));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Tag 'interval' must be an int", e);
         }
-
-        Map<String, String> tags = new HashMap<>(metric.getTags().getKv());
         final String unit = tags.remove(MetricDefinition.UNIT);
         if (unit == null) {
             throw new IllegalArgumentException("Tag 'unit' is required by metrictank");
@@ -67,14 +64,13 @@ public class MetricTankIdFactory implements IdFactory {
             throw new IllegalArgumentException("Tag 'mtype' is required by metrictank");
         }
         List<String> formattedTags = formatTags(tags);
-
         return getKey(orgId, name, unit, mtype, interval, formattedTags);
     }
-
+    
     public String getId(int orgId, String name, String unit, String mtype, int interval, List<String> tags) {
         return getKey(orgId, name, unit, mtype, interval, tags).toString();
     }
-
+    
     public MetricKey getKey(int orgId, String name, String unit, String mtype, int interval, List<String> tags) {
         MessageDigest md;
         try {
@@ -95,14 +91,14 @@ public class MetricTankIdFactory implements IdFactory {
         }
         return new MetricKey(orgId, md.digest());
     }
-
+    
     public List<String> formatTags(Map<String, String> tags) {
         List<String> result = new ArrayList<>(tags.size());
-
+        
         for (Map.Entry<String, String> entry : tags.entrySet()) {
             final String key = entry.getKey();
             final String value = entry.getValue();
-
+            
             if (key == null || key.isEmpty() || key.contains("=") || key.contains(";") || key.contains("!")) {
                 throw new IllegalArgumentException("Metric tank does not support key: " + key);
             }
@@ -111,7 +107,7 @@ public class MetricTankIdFactory implements IdFactory {
             }
             result.add(key + "=" + value);
         }
-
+        
         Collections.sort(result);
         return result;
     }
