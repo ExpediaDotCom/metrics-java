@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.9.0 2019-01-23
+### Changed
+- Reverted release 0.7.0 changes as they broke existing library clients.
+
+## 0.8.0 2019-01-20
+### Changed
+- Updated Jackson version in response to GitHub security alert.
+
 ## 0.7.0 2019-01-17
 ### Changed
 - Metrictank interval and org_id are now stored as metatags instead of tags. This makes it possible to use tags with those names, however metrics serialised with earlier versions of metrics-java will not be compatible with this release.
