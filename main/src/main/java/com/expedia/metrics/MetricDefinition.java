@@ -15,30 +15,21 @@
  */
 package com.expedia.metrics;
 
-import java.util.*;
+import java.util.Objects;
 
 public class MetricDefinition {
     public static final String UNIT = "unit";
     public static final String MTYPE = "mtype";
 
-    private static final List<String> REQUIRED_TAGS = Arrays.asList(UNIT, MTYPE);
-    private static final TagCollection MINIMAL_TAGS;
-    static {
-        Map<String, String> kv = new HashMap<>();
-        kv.put(MTYPE, "gauge");
-        kv.put(UNIT, "metric");
-        MINIMAL_TAGS = new TagCollection(kv);
-    }
-
-    private final String key;
-    private final TagCollection tags;
-    private final TagCollection meta;
+    protected final String key;
+    protected final TagCollection tags;
+    protected final TagCollection meta;
 
     /**
-     * Constructs a MetricDefinition with minimal tags and no meta tags
+     * Constructs a MetricDefinition with no tags and no meta tags
      */
     public MetricDefinition(String key) {
-        this(key, MINIMAL_TAGS, TagCollection.EMPTY);
+        this(key, TagCollection.EMPTY, TagCollection.EMPTY);
     }
 
     /**
@@ -61,11 +52,6 @@ public class MetricDefinition {
         }
         if (meta == null) {
             throw new IllegalArgumentException("meta is required. Use TagCollection.EMPTY if you have no meta tags");
-        }
-        for (String tag : REQUIRED_TAGS) {
-            if (!tags.getKv().containsKey(tag)) {
-                throw new IllegalArgumentException("Missing required tag: " + tag);
-            }
         }
         this.key = key;
         this.tags = tags;

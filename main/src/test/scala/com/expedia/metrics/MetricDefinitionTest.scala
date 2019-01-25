@@ -35,19 +35,5 @@ class MetricDefinitionTest extends FunSpec with Matchers  {
       val metric2 = new MetricDefinition(tags, meta2)
       metric1 should equal(metric2)
     }
-    it("should require a unit") {
-      val tags = new TagCollection(Map("mtype" -> "gauge").asJava)
-      an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags, TagCollection.EMPTY)
-    }
-    it("should require an mtype") {
-      val tags = new TagCollection(Map("unit" -> "P").asJava)
-      an [IllegalArgumentException] should be thrownBy new MetricDefinition(tags, TagCollection.EMPTY)
-    }
-    it("should have an mtype and unit when created from a key") {
-      val metric = new MetricDefinition("test.key")
-      metric.getKey should be("test.key")
-      metric.getTags.getKv.get(MetricDefinition.MTYPE) should be("gauge")
-      metric.getTags.getKv.get(MetricDefinition.UNIT) should be("metric")
-    }
   }
 }

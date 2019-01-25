@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.10.0 2019-01-25
+### Added
+- Added MetricTankMetricDefinition which extends MetricDefinition with the orgId, interval, unit, and mtype fields required by metrictank
+
+### Changed
+- Removed the requirement that all metrics have tags unit and mtype. This means the data model in this library is more permissive that the Metrics 2.0 specification.
+
 ## 0.9.0 2019-01-23
 ### Changed
 - Reverted release 0.7.0 changes as they broke existing library clients.

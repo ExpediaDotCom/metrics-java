@@ -19,6 +19,7 @@ import com.expedia.metrics.MetricData;
 import com.expedia.metrics.MetricDataSerializer;
 import com.expedia.metrics.MetricDefinition;
 import com.expedia.metrics.TagCollection;
+import com.google.common.collect.Maps;
 import org.msgpack.core.*;
 
 import java.io.IOException;
@@ -31,8 +32,12 @@ import java.util.*;
  * @see <a href="https://github.com/grafana/metrictank/blob/master/docs/inputs.md#metricdata">MetricData</a>
  */
 public class MessagePackSerializer implements MetricDataSerializer {
-    public static final String ORG_ID = "org_id";
-    public static final String INTERVAL = "interval";
+    // Defaults chosen to match MetricTank Prometheus input
+    // https://github.com/grafana/metrictank/blob/b1c2c1a877d08b75d28f150b9b9b68ec90d7db73/input/prometheus/prometheus.go#L105
+    private static final int DEFAULT_ORG_ID = 1;
+    private static final int DEFAULT_INTERVAL = 15;
+    private static final String DEFAULT_UNIT = "unknown";
+    private static final String DEFAULT_MTYPE = "gauge";
     
     private static final int METRIC_NUM_FIELDS = 9;
     
@@ -90,8 +95,41 @@ public class MessagePackSerializer implements MetricDataSerializer {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         return deserializeList(buffer);
     }
-    
+
     private void serialize(MetricData metric, MessagePacker packer) throws IOException {
+        MetricDefinition md = metric.getMetricDefinition();
+        serialize(metric, packer, getOrgId(md), getInterval(md), getUnit(md), getMtype(md));
+    }
+
+    static int getOrgId(MetricDefinition metric) {
+        if (metric instanceof MetricTankMetricDefinition) {
+            return ((MetricTankMetricDefinition) metric).getOrgId();
+        }
+        return DEFAULT_ORG_ID;
+    }
+
+    static int getInterval(MetricDefinition metric) {
+        if (metric instanceof MetricTankMetricDefinition) {
+            return ((MetricTankMetricDefinition) metric).getInterval();
+        }
+        return DEFAULT_INTERVAL;
+    }
+
+    static String getUnit(MetricDefinition metric) {
+        if (metric instanceof MetricTankMetricDefinition) {
+            return ((MetricTankMetricDefinition) metric).getUnit();
+        }
+        return DEFAULT_UNIT;
+    }
+
+    static String getMtype(MetricDefinition metric) {
+        if (metric instanceof MetricTankMetricDefinition) {
+            return ((MetricTankMetricDefinition) metric).getMtype();
+        }
+        return DEFAULT_MTYPE;
+    }
+
+    private void serialize(MetricData metric, MessagePacker packer, int orgId, int interval, String unit, String mtype) throws IOException {
         final String name = metric.getMetricDefinition().getKey();
         if (name == null) {
             throw new IOException("Key is required by metrictank");
@@ -103,23 +141,9 @@ public class MessagePackSerializer implements MetricDataSerializer {
             throw new IOException("Metrictank does not support value tags");
         }
         Map<String, String> tags = new HashMap<>(metric.getMetricDefinition().getTags().getKv());
-        final int orgId;
-        try {
-            orgId = Integer.parseInt(tags.remove(ORG_ID));
-        } catch (NumberFormatException e) {
-            throw new IOException("Tag 'org_id' must be an int", e);
-        }
-        final int interval;
-        try {
-            interval = Integer.parseInt(tags.remove(INTERVAL));
-        } catch (NumberFormatException e) {
-            throw new IOException("Tag 'interval' must be an int", e);
-        }
-        final String unit = tags.remove(MetricDefinition.UNIT);
         if (unit == null) {
             throw new IOException("Tag 'unit' is required by metrictank");
         }
-        final String mtype = tags.remove(MetricDefinition.MTYPE);
         if (mtype == null) {
             throw new IOException("Tag 'mtype' is required by metrictank");
         }
@@ -211,12 +235,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         throwIfMissing("Interval", interval == 0);
         throwIfMissing("Mtype", mtype.isEmpty());
         
-        final Map<String, String> kvTags = new HashMap<>();
-        
-        kvTags.put(ORG_ID, Integer.toString(orgId));
-        kvTags.put(INTERVAL, Integer.toString(interval));
-        kvTags.put(MetricDefinition.UNIT, unit);
-        kvTags.put(MetricDefinition.MTYPE, mtype);
+        final Map<String, String> kvTags = Maps.newHashMapWithExpectedSize(rawTags.size());
         for (final String tag : rawTags) {
             final int pos = tag.indexOf('=');
             if (pos == -1) {
@@ -228,7 +247,7 @@ public class MessagePackSerializer implements MetricDataSerializer {
         }
         
         TagCollection tags = new TagCollection(kvTags);
-        return new MetricData(new MetricDefinition(name, tags, TagCollection.EMPTY), value, timestamp);
+        return new MetricData(new MetricTankMetricDefinition(name, tags, TagCollection.EMPTY, orgId, interval, unit, mtype), value, timestamp);
     }
     
     private void throwIfMissing(String fieldName, boolean isMissing) throws IOException {
