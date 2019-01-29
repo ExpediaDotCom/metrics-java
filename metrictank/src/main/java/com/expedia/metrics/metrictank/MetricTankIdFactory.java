@@ -37,7 +37,7 @@ public class MetricTankIdFactory implements IdFactory {
         final int orgId = MessagePackSerializer.getOrgId(metric);
         final String name = metric.getKey();
         if (name == null) {
-            throw new IllegalArgumentException("Property 'key' is required by metrictank");
+            throw new IllegalArgumentException("Property 'key' is required by Metrictank");
         }
         final int interval = MessagePackSerializer.getInterval(metric);
         final String unit = MessagePackSerializer.getUnit(metric);
@@ -78,11 +78,17 @@ public class MetricTankIdFactory implements IdFactory {
             final String key = entry.getKey();
             final String value = entry.getValue();
             
+            // The unit tag is a special case where the spec allows the empty string as a value.
+            if ("unit".equals(key) && "".equals(value)) {
+                result.add(key + "=" + value);
+                continue;
+            }
+            
             if (key == null || key.isEmpty() || key.contains("=") || key.contains(";") || key.contains("!")) {
-                throw new IllegalArgumentException("Metric tank does not support key: " + key);
+                throw new IllegalArgumentException("Metrictank does not support key: " + key);
             }
             if (value == null || value.isEmpty() || value.contains(";")) {
-                throw new IllegalArgumentException("Metric tank does not support value [" + value + "] for key " + key);
+                throw new IllegalArgumentException("Metrictank does not support value [" + value + "] for key " + key);
             }
             result.add(key + "=" + value);
         }

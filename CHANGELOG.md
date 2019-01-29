@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.10.1 2019-01-29
+### Added
+- Updated MetricTankIdFactory to support the empty string as a value for the unit tag, per Metrics 2.0 spec.
+
 ## 0.10.0 2019-01-25
 ### Added
 - Added MetricTankMetricDefinition which extends MetricDefinition with the orgId, interval, unit, and mtype fields required by metrictank
