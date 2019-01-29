@@ -29,13 +29,7 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
     val serializedMetric = Base64.getDecoder.decode("iaJJZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1Zcs/4KWm+PMheaRVbml0oVCkVGltZdMAAAAAW2JjxKVNdHlwZaVnYXVnZaRUYWdzkA==")
     val serializedMetricList = Base64.getDecoder.decode("kYmiSWTZIjEuZDljOThmNDQ1N2I2YWEwNmEwOGU0MDFiMGZiYzk3N2alT3JnSWQBpE5hbWWhYahJbnRlcnZhbDylVmFsdWXLP+ClpvjzIXmkVW5pdKFQpFRpbWXTAAAAAFtiY8SlTXR5cGWlZ2F1Z2WkVGFnc5A=")
 
-    val tags = new TagCollection(Map(
-      MessagePackSerializer.ORG_ID -> "1",
-      MessagePackSerializer.INTERVAL -> "60",
-      MetricDefinition.UNIT -> "P",
-      MetricDefinition.MTYPE -> "gauge"
-    ).asJava)
-    val metric = new MetricData(new MetricDefinition("a", tags, TagCollection.EMPTY), 0.5202212202357678, 1533174724L)
+    val metric = new MetricData(new MetricTankMetricDefinition("a", TagCollection.EMPTY, TagCollection.EMPTY, 1, 60, "P", "gauge"), 0.5202212202357678, 1533174724L)
     val metrics = List(metric).asJava
 
     it("should serialize a MetricData") {
@@ -81,13 +75,7 @@ class MessagePackSerializerTest extends FunSpec with Matchers with GivenWhenThen
     it("should default to an empty unit when deserialising") {
       Given("A MetricData with no unit")
       val serializedMetricNoUnit = Base64.getDecoder.decode("iaJJZNkiMS5mNmJlZTcyZTU1OWI0ZDM4YmMwMWJhZmU5NWE3YjFlZaVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1ZctAyAAAAAAAAKRVbml0oKRUaW1l0wAAAABcNBY9pU10eXBlpWdhdWdlpFRhZ3OQ")
-      val tagsEmptyUnit = new TagCollection(Map(
-        MessagePackSerializer.ORG_ID -> "1",
-        MessagePackSerializer.INTERVAL -> "60",
-        MetricDefinition.UNIT -> "",
-        MetricDefinition.MTYPE -> "gauge"
-      ).asJava)
-      val metricNoUnit = new MetricData(new MetricDefinition("a", tagsEmptyUnit, TagCollection.EMPTY), 12288, 1546917437L)
+      val metricNoUnit = new MetricData(new MetricTankMetricDefinition("a", TagCollection.EMPTY, TagCollection.EMPTY, 1, 60, "", "gauge"), 12288, 1546917437L)
 
       When("deserializing")
       val m = messagePackSerializer.deserialize(serializedMetricNoUnit)

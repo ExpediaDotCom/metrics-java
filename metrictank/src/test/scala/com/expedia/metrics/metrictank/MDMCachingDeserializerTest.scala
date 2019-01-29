@@ -37,8 +37,8 @@ class MDMCachingDeserializerTest extends FunSpec with Matchers with GivenWhenThe
     it("should be able to deserialise a MetricPoint if the MetricData has been seen") {
       Given("a serialized metric data and metricpoint with the same id")
       val deserializer = new MDMCachingDeserializer()
-      val metricDataBytes = Base64.getDecoder.decode("iaJJZNkiMS4yMGM3MjcxNzdiNzdhZTg5YmYzZmM5NWQwZmMzYmZhNKVPcmdJZAGkTmFtZdm0ZXdldGVzdC51cy13ZXN0LTIuc3RhdHMuZ2F1Z2VzLmV3cy1ib29raW5nLXNlcnZpY2UuMzJlNDBkLTUwNzEwN2IyNDliOC5tZXRyaWNzLnZmb3AuaG90ZWxzLmJvb2suRVdTQm9va2luZ1Rlc3RfUElJRExFU1MuRUNPTS43MC44MDgwYTAwYV81Yzk1XzQ5YjBfYjA0NF8wM2M4YTkyNjMwMTAuOTk5dGhQZXJjZW50aWxlqEludGVydmFsHqVWYWx1ZctALTAqVhTfi6RVbml0p3Vua25vd26kVGltZdJboHovpU10eXBlpWdhdWdlpFRhZ3OQ")
-      val metricPointBytes = Base64.getDecoder.decode("AiDHJxd7d66Jvz/JXQ/Dv6RALTAqVhTfi1ugei8BAAAA")
+      val metricDataBytes = Base64.getDecoder.decode("iaJJZNkiMS5kOWM5OGY0NDU3YjZhYTA2YTA4ZTQwMWIwZmJjOTc3ZqVPcmdJZAGkTmFtZaFhqEludGVydmFsPKVWYWx1Zcs/4KWm+PMheaRVbml0oVCkVGltZdMAAAAAW2JjxKVNdHlwZaVnYXVnZaRUYWdzkA==")
+      val metricPointBytes = Base64.getDecoder.decode("AtnJj0RXtqoGoI5AGw+8l3+sVCYs2tjjP+JjYlsBAAAA")
 
       When("deserialising the metric data and then the metric point")
       val metricData = deserializer.deserialize(ByteBuffer.wrap(metricDataBytes))
