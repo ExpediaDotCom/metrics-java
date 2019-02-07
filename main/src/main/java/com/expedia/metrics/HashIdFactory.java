@@ -15,7 +15,8 @@
  */
 package com.expedia.metrics;
 
-import javax.xml.bind.DatatypeConverter;
+import com.expedia.metrics.util.Encoder;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -37,8 +38,10 @@ public class HashIdFactory implements IdFactory {
             throw new RuntimeException("The JRE is missing required digest algorithm MD5", e);
         }
         md.update(defaultIdFactory.getId(metric).getBytes(StandardCharsets.UTF_8));
-
         byte[] digest = md.digest();
-        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+
+        final StringBuilder sb = new StringBuilder();
+        Encoder.encodeHex(sb, digest);
+        return sb.toString();
     }
 }
