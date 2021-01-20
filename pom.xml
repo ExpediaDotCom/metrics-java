@@ -52,7 +52,7 @@
         <scala-library.version>${scala.major.version}.${scala.minor.version}.${scala.tiny.version}</scala-library.version>
 
         <guava.version>26.0-jre</guava.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.9.10.7</jackson.version>
         <json.version>20180130</json.version>
         <msgpack-core.version>0.8.16</msgpack-core.version>
         <scalatest.version>3.0.5</scalatest.version>
